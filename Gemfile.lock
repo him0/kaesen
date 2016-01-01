@@ -1,0 +1,42 @@
+GIT
+  remote: git://github.com/leishman/kraken_ruby.git
+  revision: bce2daad1f5fd761c5b07c018c5a911c3922d66d
+  specs:
+    kraken_ruby (0.5.0)
+      addressable
+      hashie
+      httparty
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.4.0)
+    coderay (1.1.0)
+    hashie (3.4.3)
+    httparty (0.13.7)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    json (1.8.3)
+    method_source (0.8.2)
+    multi_xml (0.5.5)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    ruby_coincheck_client (0.1.4)
+    slop (3.6.0)
+    yard (0.8.7.6)
+    zaif (0.0.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  kraken_ruby!
+  pry
+  ruby_coincheck_client
+  yard
+  zaif
+
+BUNDLED WITH
+   1.11.2
