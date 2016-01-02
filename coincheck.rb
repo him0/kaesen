@@ -30,6 +30,8 @@ class Coincheck < Market
     get_cool_down
     @left_jpy = b["jpy"].to_f
     @left_btc = b["btc"].to_f
+    out += @name + " is updated.\n"
+    out
   end
 
   def buy(rate,amount=0)
