@@ -32,9 +32,11 @@ class BitFlyerLightning < Market
   end
 
   def buy(rate,amount=0)
+    get_sendchildorder(rate, amount, "BUY", true)
   end
 
   def sell(rate,amount=0)
+    get_sendchildorder(rate, amount, "SELL", true)
   end
 
   def market_buy(amount=0)
@@ -71,6 +73,30 @@ class BitFlyerLightning < Market
     return get_private_json(address)
   end
 
+  # Get create order.
+  # @return [json] sendchildorder_json
+  def get_sendchildorder(rate, amount=0, order_type, is_limit_oeder)
+    sendchildorder_address = "me/sendchildorder"
+    address = (@base_url + "/" +
+      @api_version + "/" +
+      sendchildorder_address)
+
+    sub_order_type = "MARKET"
+    if is_limit_oeder
+      sub_order_type = "LIMIT"
+    end
+    body = '{
+      "product_code": "BTC_JPY",
+      "child_order_type": "' + sub_order_type + '",
+      "side": "' + order_type + '",
+      "price": "' + rate.to_s + '",
+      "size": "' + amount.to_s + '",
+      "minute_to_expire": 525600,
+      "time_in_force": "GTC"
+    }'
+    return post_private_json(address, body)
+  end
+
   # Check the api and api secret.
   # @raise []
   def check_key
@@ -79,7 +105,7 @@ class BitFlyerLightning < Market
     end
   end
 
-  # Connect to public api via https.
+  # Connect to public api via https with GET method.
   # @param [String] address
   # @return [json]
   # @raise []
@@ -109,15 +135,15 @@ class BitFlyerLightning < Market
     end
   end
 
-  # Connect to private api via https.
+  # Connect to private api via https with GET method.
   # @param [String] address
-  def get_private_json(address)
+  def get_private_json(address, body="")
     check_key
 
     uri = URI.parse(address)
     method = "GET"
     timestamp = get_timestamp()
-    text = timestamp + method + uri.request_uri
+    text = timestamp + method + uri.request_uri + body
     key = @api_key
     secret = @api_key_secret
     sign = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
@@ -127,7 +153,53 @@ class BitFlyerLightning < Market
         "ACCESS-KEY" => key,
         "ACCESS-TIMESTAMP" => timestamp,
         "ACCESS-SIGN" => sign,
+        "Content-Type" => "application/json"
       })
+      req.body = body
+
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      https.open_timeout = 5
+      https.read_timeout = 15
+
+      https.start {|w|
+        response = w.request(req)
+        case response
+          when Net::HTTPSuccess
+            json = JSON.parse(response.body)
+            raise JSONException, response.body if json == nil
+            raise APIErrorException, json["error"] if json.is_a?(Hash) && json["success"] == 0
+            get_cool_down
+            return json
+          else
+            raise ConnectionFailedException, "Failed to connect to bitFlyer Lightning: " + response.value
+        end
+      }
+    rescue
+      raise
+    end
+  end
+
+  # Connect to private api via https with POST method.
+  def post_private_json(address, body)
+    check_key
+
+    uri = URI.parse(address)
+    method = "POST"
+    timestamp = get_timestamp()
+    text = timestamp + method + uri.request_uri + body
+    key = @api_key
+    secret = @api_key_secret
+    sign = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
+
+    begin
+      req = Net::HTTP::Post.new(uri, initheder={
+        "ACCESS-KEY" => key,
+        "ACCESS-TIMESTAMP" => timestamp,
+        "ACCESS-SIGN" => sign,
+        "Content-Type" => "application/json"
+      })
+      req.body = body
 
       https = Net::HTTP.new(uri.host, uri.port)
       https.use_ssl = true

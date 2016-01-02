@@ -33,9 +33,11 @@ class MyZaif < Market
   end
 
   def buy(rate,amount=0)
+    @client.bid(@currency_code, rate, amount)
   end
 
   def sell(rate,amount=0)
+    @client.ask(@currency_code, rate, amount)
   end
 
   def market_buy(amount=0)
