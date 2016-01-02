@@ -170,13 +170,15 @@ class BitFlyerLightning < Market
           when Net::HTTPSuccess
             json = JSON.parse(response.body)
             raise JSONException, response.body if json == nil
-            raise APIErrorException, json["error"] if json.is_a?(Hash) && json["success"] == 0
+            raise APIErrorException, json["error_message"] if json.is_a?(Hash) && json["status"] != nil
             get_cool_down
             return json
           else
             raise ConnectionFailedException, "Failed to connect to bitFlyer Lightning: " + response.value
         end
       }
+    rescue Net::HTTPServerException
+      retry
     rescue
       raise
     end
@@ -214,7 +216,7 @@ class BitFlyerLightning < Market
           when Net::HTTPSuccess
             json = JSON.parse(response.body)
             raise JSONException, response.body if json == nil
-            raise APIErrorException, json["error"] if json.is_a?(Hash) && json["success"] == 0
+            raise APIErrorException, json["error_message"] if json["status"] != nil
             get_cool_down
             return json
           else
@@ -236,5 +238,9 @@ class BitFlyerLightning < Market
       sleep(@cool_down_time)
     end
   end
+
+  class ConnectionFailedException < StandardError; end
+  class APIErrorException < StandardError; end
+  class JSONException < StandardError; end
 
 end
