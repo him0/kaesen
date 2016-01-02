@@ -22,6 +22,7 @@ class Coincheck < Market
   end
 
   def update()
+    out = ""
     t = JSON.parse(@client.read_ticker.body)
     @ask = t["ask"].to_f
     @bid = t["bid"].to_f

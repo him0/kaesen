@@ -22,13 +22,15 @@ class BitFlyerLightning < Market
   end
 
   def update()
+    out = ""
     t = get_ticker()
     @ask = t["best_ask"].to_f
     @bid = t["best_bid"].to_f
     b = get_balance()
     @left_jpy = b[0]["amount"].to_f
     @left_btc = b[1]["amount"].to_f
-
+    out += @name + " is updated.\n"
+    out
   end
 
   def buy(rate,amount=0)

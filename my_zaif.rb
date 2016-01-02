@@ -24,12 +24,21 @@ class MyZaif < Market
   end
 
   def update()
+    out=""
     t = @client.get_ticker(@currency_code)
     @ask = t["ask"].to_f
     @bid = t["bid"].to_f
-    b = @client.get_info()
+
+    begin  # nonce not incremented error point
+      b = @client.get_info()
+    rescue
+      retry
+    end
+
     @left_jpy = b["funds"]["jpy"].to_f
     @left_btc = b["funds"]["btc"].to_f
+    out += @name + " is updated.\n"
+    out
   end
 
   def buy(rate,amount=0)
