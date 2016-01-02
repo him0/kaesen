@@ -47,9 +47,9 @@ class Market
   def sell(rate, amount=0)
   end
 
-  # Bought the amount of Bitcoin.
-  # @param [float] amount
-  def market_buy(amount=0)
+  # Bought the amount of JPY.
+  # @param [float] market_buy_amount
+  def market_buy(market_buy_amount=0)
 
   end
 
