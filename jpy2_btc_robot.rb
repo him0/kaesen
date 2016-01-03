@@ -9,16 +9,18 @@ require 'logger'
 
 class Jpy2BtcRobot
   def initialize
-    @log = Logger.new('./log/'+(Time.now().to_i.to_s)+".log")
-    @log.info("Start!")
+    @log = Logger.new('./log/'+(Time.now().strftime("%Y-%m-%d"))+".log")
     @markets = []
     @markets.push(Coincheck.new())
     @markets.push(MyZaif.new())
     @markets.push(BitFlyerLightning.new())
-    @min_ask_market = @markets[0] # 買値が一番安い
-    @max_bid_market = @markets[0] # 売値が一番高い
+    @min_ask_market = @markets[0] # Bitcoinの買値が一番安い
+    @max_bid_market = @markets[0] # Bitcoinの売値が一番高い
     @gap = 0
     @gap_rate = 0
+
+    @log.info("Start!")
+    log_property
   end
 
   def update
@@ -43,24 +45,24 @@ class Jpy2BtcRobot
   def get_gap
     out = ""
 
-    for m in @markets
-      # out += sprintf("%-10s\n", m.name)
-      # out += sprintf("ask: %7.4f\n", m.ask)
-      # out += sprintf("bid: %7.4f\n", m.bid)
+    @markets.each{|m|
       @min_ask_market = m.ask < @min_ask_market.ask ? m : @min_ask_market
-      @max_bid_market = @max_bid_market.bid < m.bid ? m : @min_ask_market
-    end
+      @max_bid_market = @max_bid_market.bid < m.bid ? m : @max_bid_market
+      out += sprintf("%-10s\n", m.name)
+      out += sprintf("ask: %7.4f\n", m.ask)
+      out += sprintf("bid: %7.4f\n", m.bid)
+    }
 
-    @min_ask = @min_ask_market.ask
+    min_ask = @min_ask_market.ask
     min_ask_name = @min_ask_market.name
-    out += sprintf("Minimal Ask: %7.4f (%s)\n", @min_ask, min_ask_name)
+    out += sprintf("Minimal Ask: %7.4f (%s)\n", min_ask, min_ask_name)
 
-    @max_bid = @max_bid_market.bid
+    max_bid = @max_bid_market.bid
     max_bid_name = @max_bid_market.name
-    out += sprintf("Maximam Bid: %7.4f (%s)\n", @max_bid, max_bid_name)
+    out += sprintf("Maximam Bid: %7.4f (%s)\n", max_bid, max_bid_name)
 
-    @gap = @max_bid - @min_ask
-    @gap_rate = (@max_bid / @min_ask) * 100
+    @gap = max_bid - min_ask
+    @gap_rate = (max_bid / min_ask) * 100
 
     out += sprintf("This Gap is %7.4f(%3.2f)\n", @gap, @gap_rate)
 
@@ -70,18 +72,27 @@ class Jpy2BtcRobot
 
   def get_property
     out = ""
-    p = 0
-    for m in @markets
-      p += m.total_prperty
+    @property = 0
+    @markets.each{|m|
+      @property += m.total_prperty
       out += sprintf("%-10s: ", m.name)
-      out += sprintf("%7.4f ", m.left_jpy)
-      out += sprintf("%7.4f ", m.left_btc)
-      out += sprintf("%7.4f\n", m.total_prperty)
-    end
+      out += sprintf("%-7.4f ", m.left_jpy)
+      out += sprintf("%-7.4f ", m.left_btc)
+      out += sprintf("%-7.4f\n", m.total_prperty)
+
+    }
     out += separate
-    out += sprintf("Total" + " " * 5 + ": " + "%7.4f\n"%(p))
+    out += sprintf("Total" + " " * 5 + ": " + "%7.4f\n"%(@property))
     out += separate
     out
+  end
+
+  def log_property
+    get_property
+    @log.info(sprintf("Total Property: " + "%7.4f"%(@property)))
+  end
+
+  def trade_rule_1
   end
 
   def separate
