@@ -37,11 +37,11 @@ class BitFlyerLightning < Market
   end
 
   def buy(rate,amount=0)
-    get_sendchildorder(rate, amount, "BUY", true)
+    get_sendchildorder(rate, amount, "BUY")
   end
 
   def sell(rate,amount=0)
-    get_sendchildorder(rate, amount, "SELL", true)
+    get_sendchildorder(rate, amount, "SELL")
   end
 
   def market_buy(amount=0)
@@ -52,6 +52,7 @@ class BitFlyerLightning < Market
 
   end
 
+  # 機能がない！
   def send(amount, address)
 
   end
@@ -80,16 +81,13 @@ class BitFlyerLightning < Market
 
   # Get create order.
   # @return [json] sendchildorder_json
-  def get_sendchildorder(rate, amount=0, order_type, is_limit_oeder)
+  def get_sendchildorder(rate, amount=0, order_type="BUY", sub_order_type="LIMIT")
     sendchildorder_address = "me/sendchildorder"
+
     address = (@base_url + "/" +
       @api_version + "/" +
       sendchildorder_address)
 
-    sub_order_type = "MARKET"
-    if is_limit_oeder
-      sub_order_type = "LIMIT"
-    end
     body = '{
       "product_code": "BTC_JPY",
       "child_order_type": "' + sub_order_type + '",
@@ -101,6 +99,9 @@ class BitFlyerLightning < Market
     }'
     return post_private_json(address, body)
   end
+
+  # Get order history.
+  # @eturn [json] getchildorders_json
 
   # Check the api and api secret.
   # @raise []
