@@ -26,8 +26,11 @@ class MyZaif < Market
   def update()
     out=""
     t = @client.get_ticker(@currency_code)
-    @ask = t["ask"].to_f
-    @bid = t["bid"].to_f
+    fee = 0 # %
+    @raw_ask = t["ask"].to_f
+    @ask = @raw_ask * ((100 + fee) / 100)
+    @raw_bid = t["bid"].to_f
+    @bid = @raw_bid * ((100 - fee) / 100)
 
     begin  # nonce not incremented error point
       b = @client.get_info()

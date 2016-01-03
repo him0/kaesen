@@ -24,8 +24,11 @@ class BitFlyerLightning < Market
   def update()
     out = ""
     t = get_ticker()
-    @ask = t["best_ask"].to_f
-    @bid = t["best_bid"].to_f
+    fee = 0 # %
+    @raw_ask = t["best_ask"].to_f
+    @ask = @raw_ask * ((100 + fee) / 100)
+    @raw_bid = t["best_bid"].to_f
+    @bid = @raw_bid * ((100 - fee) / 100)
     b = get_balance()
     @left_jpy = b[0]["amount"].to_f
     @left_btc = b[1]["amount"].to_f

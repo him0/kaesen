@@ -14,7 +14,9 @@ class Market
     @address = "no set"
     @api_key = ""
     @api_key_secret = ""
+    @raw_ask = 0
     @ask = 0
+    @raw_bid = 0
     @bid = 0
     @left_jpy = 0
     @left_btc = 0
@@ -29,7 +31,7 @@ class Market
   def total_prperty
     property = 0
     property += @left_jpy
-    property += @left_btc * @bid
+    property += @left_btc * @raw_bid
     property
   end
 
@@ -68,7 +70,9 @@ class Market
   attr_reader :name
   attr_reader :address
   attr_reader :ask
+  attr_reader :raw_ask
   attr_reader :bid
+  attr_reader :raw_bid
   attr_reader :left_jpy
   attr_reader :left_btc
 end

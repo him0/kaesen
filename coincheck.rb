@@ -24,8 +24,11 @@ class Coincheck < Market
   def update()
     out = ""
     t = JSON.parse(@client.read_ticker.body)
-    @ask = t["ask"].to_f
-    @bid = t["bid"].to_f
+    fee = 0.15 # %
+    @raw_ask = t["ask"].to_f
+    @ask = @raw_ask * ((100 + fee) / 100)
+    @raw_bid = t["bid"].to_f
+    @bid = @raw_bid * ((100 - fee) / 100)
     b = JSON.parse(@client.read_balance.body) # private
     get_cool_down
     @left_jpy = b["jpy"].to_f
