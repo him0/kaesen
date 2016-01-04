@@ -1,36 +1,33 @@
 require './market.rb'
 require 'Zaif'
 
+# Zaif Wrapper Class
 class MyZaif < Market
-# Zaif wapper class
 
-  # @param [String] @address the address of Zaif Wallet
-  # The address cannot be get with Zaif API.
-  # This should be set with Environment Variable.
-  # @param [String] @currency_code
-  # @param [Zaif::API] @client
   def initialize()
-    @name = "Zaif"
-    @api_key = ENV["ZAIF_API_KEY"]
+    super()
+    @name           = "Zaif"
+    @api_key        = ENV["ZAIF_API_KEY"]
     @api_key_secret = ENV["ZAIF_API_KEY_SECRET"]
-    @address = ENV["ZAIF_ADDRESS"]
-    opts = {
-      "api_key":@api_key,
-      "api_secret":@api_key_secret
-    }
+    @address        = ENV["ZAIF_ADDRESS"]
+    @fee_rate       = 0 # %
     @currency_code = "btc"
+    opts = {
+      "api_key":    @api_key,
+      "api_secret": @api_key_secret
+    }
     @client = Zaif::API.new(opts)
-    update()
   end
 
+  # Update Properties.
+  # Abstract Method.
+  # @return ?
   def update()
-    out=""
     t = @client.get_ticker(@currency_code)
-    fee = 0 # %
     @raw_ask = t["ask"].to_f
-    @ask = @raw_ask * ((100 + fee) / 100)
+    @ask = @raw_ask * ((100 + @fee_rate) / 100)
     @raw_bid = t["bid"].to_f
-    @bid = @raw_bid * ((100 - fee) / 100)
+    @bid = @raw_bid * ((100 - @fee_rate) / 100)
 
     begin  # nonce not incremented error point
       b = @client.get_info()
@@ -38,29 +35,61 @@ class MyZaif < Market
       retry
     end
 
-    @left_jpy = b["funds"]["jpy"].to_f
-    @left_btc = b["funds"]["btc"].to_f
-    out += @name + " is updated.\n"
-    out
+    @jpy = b["funds"]["jpy"].to_f
+    @btc = b["funds"]["btc"].to_f
   end
 
-  def buy(rate,amount=0)
-    @client.bid(@currency_code, rate, amount)
+  # Bought the amount of Bitcoin at the rate.
+  # 指数注文 買い.
+  # Abstract Method.
+  # @param [int] rate
+  # @param [float] amount
+  # @return [hash] history_order_hash
+  def buy(rate, amount=0)
+    @client.bid(@currency_code, rate.to_i, amount)
   end
 
-  def sell(rate,amount=0)
-    @client.ask(@currency_code, rate, amount)
+  # Sell the amount of Bitcoin at the rate.
+  # 指数注文 売り.
+  # Abstract Method.
+  # @param [int] rate
+  # @param [float] amount
+  # @return [hash] history_order_hash
+  def sell(rate, amount=0)
+    @client.ask(@currency_code, rate.to_i, amount)
   end
 
-  def market_buy(amount=0)
-
+  # Bought the amount of JPY.
+  # Abstract Method.
+  # @param [float] market_buy_amount
+  # @return [hash] history_order_hash
+  # "jpy" -> amount of jpy.
+  # "btc" -> amount of btc.
+  # "rate" -> exchange rate.
+  # [todo] update
+  def market_buy(market_buy_amount=0)
+    amount = market_buy_amount / @bid
+    @client.bid(@currency_code, @bid*1.1, amount)
   end
 
+  # Sell the amount of Bitcoin.
+  # Abstract Method.
+  # @param [float] amount
+  # @return [hash] history_order_hash
+  # "jpy" -> amount of jpy.
+  # "btc" -> amount of btc.
+  # "rate" -> exchange rate.
+  # [todo] update
   def market_sell(amount=0)
-
+    @client.ask(@currency_code, @ask*1.1, amount)
   end
 
-  def send(amount, address)
+  # Send amount of Bitcoint to address.
+  # Abstract Method.
+  # @param [float] amount
+  # @param [String] address
+  # @return ?
+  def send(amount=0, address)
     @client.withdraw(@currency_code, address, amount)
   end
 end

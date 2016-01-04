@@ -3,117 +3,135 @@ require 'json'
 require 'openssl'
 require 'uri'
 require 'net/http'
-require 'time'
 
+# bitFlyerLinghtning Wrapper Class
 class BitFlyerLightning < Market
-# bitFlyerLinghtning wapper class
 
-  # @param [String] @base_rul The base URL of API.
-  # @param [String] @api_version The version of API.
   def initialize()
     super()
-    @name = "bitFlyerL" # omitted name
-    @api_key = ENV["BIT_FLYER_LIGHTNING_API_KEY"]
+    @name           = "bitFlyerL"
+    @api_key        = ENV["BIT_FLYER_LIGHTNING_API_KEY"]
     @api_key_secret = ENV["BIT_FLYER_LIGHTNING_API_KEY_SECRET"]
-    @base_url = "https://lightning.bitflyer.jp"
-    @api_version = "v1"
-
-    update()
+    @base_url       = "https://lightning.bitflyer.jp"
+    @api_version    = "v1"
+    @fee_rate       = 0 # %
   end
 
+  # Update Properties.
+  # Abstract Method.
+  # @return ?
   def update()
-    out = ""
     t = get_ticker()
-    fee = 0 # %
     @raw_ask = t["best_ask"].to_f
-    @ask = @raw_ask * ((100 + fee) / 100)
+    @ask = @raw_ask * ((100 + @fee_rate) / 100)
     @raw_bid = t["best_bid"].to_f
-    @bid = @raw_bid * ((100 - fee) / 100)
+    @bid = @raw_bid * ((100 - @fee_rate) / 100)
     b = get_balance()
-    @left_jpy = b[0]["amount"].to_f
-    @left_btc = b[1]["amount"].to_f
-    out += @name + " is updated.\n"
-    out
+    @jpy = b[0]["available"].to_f
+    @btc = b[1]["available"].to_f
   end
 
-  def buy(rate,amount=0)
+  # Bought the amount of Bitcoin at the rate.
+  # 指数注文 買い.
+  # Abstract Method.
+  # @param [int] rate
+  # @param [float] amount
+  # @return [hash] history_order_hash
+  def buy(rate, amount=0)
     get_sendchildorder(rate, amount, "BUY")
   end
 
-  def sell(rate,amount=0)
+  # Sell the amount of Bitcoin at the rate.
+  # 指数注文 売り.
+  # Abstract Method.
+  # @param [int] rate
+  # @param [float] amount
+  # @return [hash] history_order_hash
+  def sell(rate, amount=0)
     get_sendchildorder(rate, amount, "SELL")
   end
 
+  # Bought the amount of JPY.
+  # Abstract Method.
+  # @param [float] market_buy_amount
+  # @return [hash] history_order_hash
+  # "jpy" -> amount of jpy.
+  # "btc" -> amount of btc.
+  # "rate" -> exchange rate.
+  # [todo] update
   def market_buy(amount=0)
-
+    r = get_sendchildorder(rate, amount, "BUY", "MARKET")
+    id = r["parent_order_acceptance_id"]
   end
 
+  # Sell the amount of Bitcoin.
+  # Abstract Method.
+  # @param [float] amount
+  # @return [hash] history_order_hash
+  # "jpy" -> amount of jpy.
+  # "btc" -> amount of btc.
+  # "rate" -> exchange rate.
+  # [todo] update
   def market_sell(amount=0)
-
+    get_sendchildorder(rate, amount, "BUY", "MARKET")
   end
 
-  # 機能がない！
+  # Send amount of Bitcoint to address.
+  # Abstract Method.
+  # @param [float] amount
+  # @param [String] address
+  # @return ?
+  # 機能がない
   def send(amount, address)
-
+    raise NoImpimentException
   end
 
   # Get ticker json.
-  # @return [json] ticker_json
+  # @return [hash] ticker_hash
   def get_ticker()
     ticker_address = "getticker"
     address = (@base_url + "/" +
-      @api_version + "/" +
-      ticker_address)
-
-    return get_public_json(address)
+               @api_version + "/" +
+               ticker_address)
+    get_public_json(address)
   end
 
   # Get a balance json.
-  # @return [json] balance_json
+  # @return [hash] balance_hash
   def get_balance()
     balance_address = "me/getbalance"
     address = (@base_url + "/" +
-      @api_version + "/" +
-      balance_address)
-
-    return get_private_json(address)
+               @api_version + "/" +
+               balance_address)
+    get_private_json(address)
   end
 
   # Get create order.
-  # @return [json] sendchildorder_json
+  # @param [int] rate
+  # @param [float] amount
+  # @param [String] order_type
+  # @param [String] sub_order_type
+  # @return [hash] order_result_hash
   def get_sendchildorder(rate, amount=0, order_type="BUY", sub_order_type="LIMIT")
     sendchildorder_address = "me/sendchildorder"
-
     address = (@base_url + "/" +
-      @api_version + "/" +
-      sendchildorder_address)
-
-    body = '{
+               @api_version + "/" +
+               sendchildorder_address)
+    body = {
       "product_code": "BTC_JPY",
-      "child_order_type": "' + sub_order_type + '",
-      "side": "' + order_type + '",
-      "price": "' + rate.to_s + '",
-      "size": "' + amount.to_s + '",
+      "child_order_type": sub_order_type,
+      "side": order_type,
+      "price": rate.to_i.to_s,
+      "size": amount.to_s,
       "minute_to_expire": 525600,
       "time_in_force": "GTC"
-    }'
-    return post_private_json(address, body)
-  end
-
-  # Get order history.
-  # @eturn [json] getchildorders_json
-
-  # Check the api and api secret.
-  # @raise []
-  def check_key
-    if @api_key.nil? or @api_key_secret.nil?
-      raise "You need to set a API key and secret"
-    end
+    }.to_json
+    post_private_json(address, body)
   end
 
   # Connect to public api via https with GET method.
   # @param [String] address
-  # @return [json]
+  # @return [hash] result_hash
   # @raise []
   def get_public_json(address)
     uri = URI.parse(address)
@@ -143,6 +161,9 @@ class BitFlyerLightning < Market
 
   # Connect to private api via https with GET method.
   # @param [String] address
+  # @param [String] body
+  # @return [hash] result_hash
+  # @raise []
   def get_private_json(address, body="")
     check_key
 
@@ -189,6 +210,10 @@ class BitFlyerLightning < Market
   end
 
   # Connect to private api via https with POST method.
+  # @param [String] address
+  # @param [String] body
+  # @return [hash] result_hash
+  # @raise []
   def post_private_json(address, body)
     check_key
 
@@ -232,19 +257,24 @@ class BitFlyerLightning < Market
     end
   end
 
-  def get_timestamp
-    time = Time.now.to_i
-    return time.to_s
+  # Check the api and api secret.
+  def check_key
+    raise "You need to set a API key and secret" if @api_key.nil? or @api_key_secret.nil?
   end
 
+  # get nonce
+  def get_timestamp
+    Time.now.to_i.to_s
+  end
+
+  # get cool down
   def get_cool_down
-    if @cool_down
-      sleep(@cool_down_time)
-    end
+    sleep(@cool_down_time) if @cool_down
   end
 
   class ConnectionFailedException < StandardError; end
   class APIErrorException < StandardError; end
   class JSONException < StandardError; end
+  class NoImpimentException < StandardError; end
 
 end
