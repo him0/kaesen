@@ -48,9 +48,12 @@ class Jpy2BtcRobot
   def get_gap
     out = ""
 
+    jpy_limit = 3000
+    btc_limit = 0.05
+
     @markets.each{|m|
-      @min_ask_market = m.ask < @min_ask_market.ask ? m : @min_ask_market
-      @max_bid_market = @max_bid_market.bid < m.bid ? m : @max_bid_market
+      @min_ask_market = (m.ask < @min_ask_market.ask && m.jpy >= jpy_limit) ? m : @min_ask_market
+      @max_bid_market = (@max_bid_market.bid < m.bid && m.btc >= btc_limit) ? m : @max_bid_market
       out += sprintf("%-10s\n", m.name)
       out += sprintf("ask: %7.4f\n", m.ask)
       out += sprintf("bid: %7.4f\n", m.bid)
@@ -99,37 +102,7 @@ class Jpy2BtcRobot
 
   # Trade with rule.
   def trade_rule_1
-    out = ""
-    # border = 100
-    rate_border = 100.20
-    amount = 0.1
-    jpy_limit = 7000
-    btc_limit = 0.1
-    min_ask = @min_ask_market.raw_ask
-    min_ask_name = @min_ask_market.name
-    max_bid = @max_bid_market.raw_bid
-    max_bid_name = @max_bid_market.name
-    if (@gap_rate > rate_border &&
-      @min_ask_market.jpy >= jpy_limit &&
-      @max_bid_market.btc >= btc_limit &&
-      @min_ask_market != @max_bid_market)
-      @min_ask_market.buy(min_ask, amount)
-      m = sprintf("Buy %f bitcoin(%.0f) @%s", amount, min_ask, min_ask_name)
-      @log.info(m)
-      out += m + "\n"
 
-      @max_bid_market.sell(max_bid, amount)
-      m = sprintf("Sell %f bitcoin(%.0f) @%s", amount, max_bid, max_bid_name)
-      @log.info(m)
-      out += m + "\n"
-
-      earn = @gap * amount
-      m = sprintf("Earn %f yen!", earn)
-      @log.info(m)
-      out += m + "\n"
-      log_property
-      out
-    end
   end
 
   # sprintf separater
@@ -154,20 +127,3 @@ rescue
 ensure
   m.log_property
 end
-
-# c = Coincheck.new
-# print(c.ask.to_s + "\n" + c.bid.to_s + "\n")
-# print(c.raw_ask.to_s + "\n" + c.raw_bid.to_s + "\n")
-# print(c.buy(51000, 0.01))
-# print(c.sell(53000, 0.01))
-# print(c.get_history(30178602))
-
-# z = MyZaif.new
-# print(z.ask.to_s + "\n" + z.bid.to_s + "\n")
-# print(z.buy(51000, 0.01))
-# print(z.sell(53000.1, 0.01))
-
-# bl = BitFlyerLightning.new
-# print(bl.ask.to_s + "\n" + bl.bid.to_s + "\n")
-# print(bl.buy(51000, 0.01))
-# print(bl.sell(51000, 0.01))
