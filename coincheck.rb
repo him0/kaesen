@@ -16,6 +16,7 @@ class Coincheck < Market
     @client = CoincheckClient.new(@api_key, @api_key_secret)
     a = JSON.parse(@client.read_accounts.body)
     @address = a["bitcoin_address"] # private api
+    update()
   end
 
   # Update Properties.

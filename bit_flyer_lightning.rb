@@ -15,6 +15,7 @@ class BitFlyerLightning < Market
     @base_url       = "https://lightning.bitflyer.jp"
     @api_version    = "v1"
     @fee_rate       = 0 # %
+    update()
   end
 
   # Update Properties.

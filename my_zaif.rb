@@ -17,6 +17,7 @@ class MyZaif < Market
       "api_secret": @api_key_secret
     }
     @client = Zaif::API.new(opts)
+    update()
   end
 
   # Update Properties.
