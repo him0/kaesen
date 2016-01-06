@@ -30,16 +30,12 @@ class Jpy2BtcRobot
   def update
     out = ""
 
-    threads = []
-    @markets.each {|m|
-      threads.push(Thread.new {
-        m.update()
-        out += m.name + " is updated.\n"
-      })
-    }
-    threads.each {|t|
-      out += t.join.value
-    }
+    @markets.map{|m|
+        Thread.new{
+          m.update
+          out += m.name + " is updated.\n"
+        }
+    }.each(&:join)
 
     out += separator
     out += Time.now.to_s + "\n"
