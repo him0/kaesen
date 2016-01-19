@@ -100,11 +100,6 @@ class Jpy2BtcRobot
     @log.info(sprintf("Total Property: " + "%7.4f"%(@property)))
   end
 
-  # Trade with rule.
-  def trade_rule_1
-
-  end
-
   # sprintf separater
   def separator
     sprintf("-" * 40 + "\n")
@@ -112,7 +107,7 @@ class Jpy2BtcRobot
 
 end
 
-
+require './trade_rules.rb'
 
 begin
   m = Jpy2BtcRobot.new()
@@ -127,3 +122,20 @@ rescue
 ensure
   m.log_property
 end
+
+# c = Coincheck.new
+# print(c.ask.to_s + "\n" + c.bid.to_s + "\n")
+# print(c.raw_ask.to_s + "\n" + c.raw_bid.to_s + "\n")
+# print(c.buy(51000, 0.01))
+# print(c.sell(53000, 0.01))
+# print(c.get_history(30178602))
+
+# z = MyZaif.new
+# print(z.ask.to_s + "\n" + z.bid.to_s + "\n")
+# print(z.buy(51000, 0.01))
+# print(z.sell(53000.1, 0.01))
+
+# bl = BitFlyerLightning.new
+# print(bl.ask.to_s + "\n" + bl.bid.to_s + "\n")
+# print(bl.buy(51000, 0.01))
+# print(bl.sell(51000, 0.01))

@@ -36,3 +36,5 @@ build/
 
 *.sh
 *.log
+my_kraken.rb
+trade_rules.rb
