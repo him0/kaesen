@@ -69,6 +69,10 @@ class Jpy2BtcRobot
     @log.info(sprintf("Total Property: " + "%7.4f"%(@property)))
   end
 
+  def logging_error(ex)
+    @log.error(ex)
+  end
+
   # sprintf separater
   def separator
     sprintf("-" * 40 + "\n")
@@ -85,9 +89,11 @@ begin
     print(m.get_property)
     print(m.get_gap)
     print(m.trade_rule_1)
+    print(m.trade_rule_2)
   end
-rescue
-    retry
+rescue => ex
+  m.logging_error(ex)
+  retry
 ensure
   m.log_property
 end
