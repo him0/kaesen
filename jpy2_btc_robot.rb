@@ -16,11 +16,6 @@ class Jpy2BtcRobot
     @markets.push(Coincheck.new())
     @markets.push(MyZaif.new())
     @markets.push(BitFlyerLightning.new())
-    @min_ask_market = @markets[0] # Bitcoinの買値が一番安い
-    @max_bid_market = @markets[0] # Bitcoinの売値が一番高い
-    @gap = 0
-    @gap_rate = 0
-
     @log.info("Start!")
     log_property
   end
@@ -30,47 +25,21 @@ class Jpy2BtcRobot
   def update
     out = ""
 
+    out += Time.now.to_s + "\n"
+    out += separator
     @markets.map{|m|
         Thread.new{
           m.update
           out += m.name + " is updated.\n"
         }
     }.each(&:join)
-
     out += separator
-    out += Time.now.to_s + "\n"
-    out += separator
-    out
-  end
-
-  # Get the gap of market prices.
-  # @return [String] out
-  def get_gap
-    out = ""
-
-    jpy_limit = 3000
-    btc_limit = 0.05
 
     @markets.each{|m|
-      @min_ask_market = (m.ask < @min_ask_market.ask && m.jpy >= jpy_limit) ? m : @min_ask_market
-      @max_bid_market = (@max_bid_market.bid < m.bid && m.btc >= btc_limit) ? m : @max_bid_market
       out += sprintf("%-10s\n", m.name)
       out += sprintf("ask: %7.4f\n", m.ask)
       out += sprintf("bid: %7.4f\n", m.bid)
     }
-
-    min_ask = @min_ask_market.ask
-    min_ask_name = @min_ask_market.name
-    out += sprintf("Minimal Ask: %7.4f (%s)\n", min_ask, min_ask_name)
-
-    max_bid = @max_bid_market.bid
-    max_bid_name = @max_bid_market.name
-    out += sprintf("Maximam Bid: %7.4f (%s)\n", max_bid, max_bid_name)
-
-    @gap = max_bid - min_ask
-    @gap_rate = (max_bid / min_ask) * 100
-    out += sprintf("This Gap is %7.4f(%3.2f)\n", @gap, @gap_rate)
-
     out += separator
     out
   end
