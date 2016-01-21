@@ -71,6 +71,7 @@ class Jpy2BtcRobot
 
   def logging_error(ex)
     @log.error(ex)
+    print(ex)
   end
 
   # sprintf separater
