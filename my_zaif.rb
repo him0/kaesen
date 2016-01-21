@@ -47,7 +47,7 @@ class MyZaif < Market
   # @param [float] amount
   # @return [hash] history_order_hash
   def buy(rate, amount=0)
-    @client.bid(@currency_code, rate.to_i, amount)
+    @client.bid(@currency_code, rate.to_i, amount.round(4))
   end
 
   # Sell the amount of Bitcoin at the rate.
@@ -57,7 +57,7 @@ class MyZaif < Market
   # @param [float] amount
   # @return [hash] history_order_hash
   def sell(rate, amount=0)
-    @client.ask(@currency_code, rate.to_i, amount)
+    @client.ask(@currency_code, rate.to_i, amount.round(4))
   end
 
   # Bought the amount of JPY.
