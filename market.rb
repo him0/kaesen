@@ -10,9 +10,9 @@ class Market
     @raw_bid = 0 # [float] 買値 + 手数料
     @bid     = 0 # [float] 売値
     @raw_jpy = 0 # [float] property
-    @jpy     = 0 # [float] avaiable
+    @jpy     = 0 # [float] available
     @raw_btc = 0 # [float] property
-    @btc     = 0 # [float] avaiable
+    @btc     = 0 # [float] available
   end
 
   # Update Properties.
