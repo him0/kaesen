@@ -69,6 +69,7 @@ class MyZaif < Market
   # "btc" -> amount of btc.
   # "rate" -> exchange rate.
   # [todo] update
+  # @deprecated
   def market_buy(market_buy_amount=0)
     amount = market_buy_amount / @bid
     @client.bid(@currency_code, @bid*1.1, amount)
@@ -82,6 +83,7 @@ class MyZaif < Market
   # "btc" -> amount of btc.
   # "rate" -> exchange rate.
   # [todo] update
+  # @deprecated
   def market_sell(amount=0)
     @client.ask(@currency_code, @ask*1.1, amount)
   end
