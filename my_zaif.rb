@@ -11,6 +11,7 @@ class MyZaif < Market
     @api_key_secret = ENV["ZAIF_API_KEY_SECRET"]
     @address        = ENV["ZAIF_ADDRESS"]
     @fee_rate       = 0 # %
+    @fee            = 5 # yen
     @currency_code = "btc"
     opts = {
       "api_key":    @api_key,
@@ -26,9 +27,9 @@ class MyZaif < Market
   def update()
     t = @client.get_ticker(@currency_code)
     @raw_ask = t["ask"].to_f
-    @ask = @raw_ask * ((100 + @fee_rate) / 100)
+    @ask = @raw_ask * ((100 + @fee_rate) / 100) + @fee
     @raw_bid = t["bid"].to_f
-    @bid = @raw_bid * ((100 - @fee_rate) / 100)
+    @bid = @raw_bid * ((100 - @fee_rate) / 100) - @fee
 
     begin  # nonce not incremented error point
       b = @client.get_info()
