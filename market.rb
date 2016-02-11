@@ -1,89 +1,87 @@
-# @abstract
-# Abstruct Class of Exchange Markets.
-class Market
+require 'bigdecimal'
 
-  def initialize()
-    @name    = "No Setting" # [String] The name of Exchange Market
-    @address = "No Setting" # [String] The address of Wallet
-    @raw_ask = 0 # [float]  買値
-    @ask     = 0 # [float] 買値 + 手数料
-    @raw_bid = 0 # [float] 買値 + 手数料
-    @bid     = 0 # [float] 売値
-    @raw_jpy = 0 # [float] property
-    @jpy     = 0 # [float] available
-    @raw_btc = 0 # [float] property
-    @btc     = 0 # [float] available
-  end
+# A module of the united wrapper for exchanging Japanese yen and Bitcoin and
+# collecting market information of any exchange markets that provide ordinary
+# customers with API access.
+module Bot
 
-  # Update Properties.
-  # Abstract Method.
-  # @return ?
-  def update()
-  end
+    # @abstract
+    # Abstruct Class of Exchange Markets.
+    class Market
 
-  # Get Total Property.
-  # @return [float] property
-  def total_prperty
-    property = 0
-    property += @jpy
-    property += @btc * @bid
-    property
-  end
+      def initialize
+        @name = raise NotImplementedError.new() # [String] The name of Exchange Market
+        @ticker = raise NotImplementedError.new() # [hash] Ticker
+                                             # ask: [BigDecimal] 最良売気配値
+                                             #   bid: [BigDecimal] 最良買気配置
+                                             #   last: [BigDecimal]
+                                             #   high: [BigDecimal] 高値
+                                             #   low: [BigDecimal] 安値
+                                             #   timestamp: [int] タイムスタンプ
+                                             #   volume: [BigDecimal] 取引量
+        @asset = raise NotImplementedError.new()  # [hash]
+                                             # jpy: [BigDecimal] 円
+                                             #   btc: [BigDecimal] BTC, Bitcoin
+        @asset_avail = raise NotImplementedError.new() # [hash]
+        @depth = raise NotImplementedError.new()  # [hash] Order book
+                                             #   asks: [array]
+                                             #     price: [BigDecimal]
+                                             #     amount: [BigDecimal]
+                                             #   bids: [array]
+                                             #   timestamp: [int]
+        @api_key    = raise NotImplementedError.new() # [String]
+        @api_secret = raise NotImplementedError.new() # [String]
+      end
 
-  # Bought the amount of Bitcoin at the rate.
-  # 指数注文 買い.
-  # Abstract Method.
-  # @param [int] rate
-  # @param [float] amount
-  # @return [hash] history_order_hash
-  def buy(rate, amount=0)
-  end
+      # Update market information.
+      # @abstract
+      # @return ?
+      def update
+        raise NotImplemented.new()
+      end
 
-  # Sell the amount of Bitcoin at the rate.
-  # 指数注文 売り.
-  # Abstract Method.
-  # @param [int] rate
-  # @param [float] amount
-  # @return [hash] history_order_hash
-  def sell(rate, amount=0)
-  end
+      # Get total assets in JPY.
+      # @return [float] property
+      def asset_in_jpy
+        (@asset[:jpy] + @asset[:btc] * @ticker[:last]).to_f
+      end
 
-  # Bought the amount of JPY.
-  # Abstract Method.
-  # @param [float] market_buy_amount
-  # @return [hash] history_order_hash
-  # "jpy" -> amount of jpy.
-  # "btc" -> amount of btc.
-  # "rate" -> exchange rate.
-  def market_buy(market_buy_amount=0)
-  end
+      # Buy the amount of Bitcoin at the rate.
+      # 指数注文 買い.
+      # @abstract
+      # @param [BigDecimal] rate
+      # @param [BigDecimal] amount
+      # @return [hash] history_order_hash
+      def buy(rate, amount=BigDecimal("0.0"))
+        raise NotImplemented.new()
+      end
 
-  # Sell the amount of Bitcoin.
-  # Abstract Method.
-  # @param [float] amount
-  # @return [hash] history_order_hash
-  # "jpy" -> amount of jpy.
-  # "btc" -> amount of btc.
-  # "rate" -> exchange rate.
-  def market_sell(amount=0)
-  end
+      # Sell the amount of Bitcoin at the rate.
+      # 指数注文 売り.
+      # @abstract
+      # @param [BigDecimal] rate
+      # @param [BigDecimal] amount
+      # @return [hash] history_order_hash
+      def sell(rate, amount=BigDecimal("0.0"))
+        raise NotImplemented.new()
+      end
 
-  # Send amount of Bitcoint to address.
-  # Abstract Method.
-  # @param [float] amount
-  # @param [String] address
-  # @return ?
-  def send(amount=0, address)
-  end
+      # Check the API key and API secret key.
+      def have_key?
+        raise "Your #{@name} API key is not set"    if @api_key.nil?
+        raise "Your #{@name} API secret is not set" if @api_secret.nil?
+      end
 
-  attr_reader :name
-  attr_reader :address
-  attr_reader :raw_ask
-  attr_reader :ask
-  attr_reader :raw_bid
-  attr_reader :bid
-  attr_reader :raw_jpy
-  attr_reader :jpy
-  attr_reader :raw_btc
-  attr_reader :btc
+      attr_reader :ticker
+      attr_reader :asset
+      attr_reader :asset_avail
+      attr_reader :depth
+
+      private
+
+      class ConnectionFailedException < StandardError; end
+      class APIErrorException < StandardError; end
+      class JSONException < StandardError; end
+
+    end
 end
