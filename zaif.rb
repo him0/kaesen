@@ -1,5 +1,7 @@
 require_relative 'market.rb'
-require 'Zaif'
+require 'net/http'
+require 'openssl'
+require 'json'
 
 module Bot
 
@@ -8,48 +10,75 @@ module Bot
   class Zaif < Market
 
     def initialize()
-      # super()
-      @name            = "Zaif"
-      @api_key         = ENV["ZAIF_API_KEY"]
-      @api_secret      = ENV["ZAIF_API_SECRET"]
-      @zaif_public_url = "https://api.zaif.jp/api/1/"
-      @zaif_trade_url  = "https://api.zaif.jp/tapi"
-      # update()
+      super()
+      @name        = "Zaif"
+      @api_key     = ENV["ZAIF_KEY"]
+      @api_secret  = ENV["ZAIF_SECRET"]
+      @url_public  = "https://api.zaif.jp/api/1/"
+      @url_private = "https://api.zaif.jp/tapi"
     end
 
-    # Get ticker.
-    # @return [json]
-    def get_ticker
-      h = get_ssl(@zaif_public_url + "ticker/btc_jpy")
-      {
-          "last" => BigDecimal(h["last"],1),
-          "high" => BigDecimal(h["high"],1),
-          "low"  => BigDecimal(h["low"],1),
-          "vwap" => BigDecimal(h["vwap"],4),
-          "volume" => BigDecimal(h["volume"],3),
-          "bid"  => BigDecimal(h["bid"],1),
-          "ask"  => BigDecimal(h["ask"],1),
-          "timestamp" => Time.now.to_i,
+    #############################################################
+    # API for public information
+    #############################################################
+
+    # Get ticker information.
+    # @return [hash] ticker       
+    #   ask: [N] 最良売気配値
+    #   bid: [N] 最良買気配値
+    #   last: [N] 最近値(?用語要チェック), last price
+    #   high: [N] 高値    
+    #   low: [N] 安値     
+    #   timestamp: [nil]
+    #   timestampl: [int] ローカルタイムスタンプ
+    #   volume: [N] 取引量
+    def ticker
+      h = get_ssl(@url_public + "ticker/btc_jpy")
+      @ticker = {
+          "last"   => N.new(h["last"]),
+          "high"   => N.new(h["high"]),
+          "low"    => N.new(h["low"]),
+          "vwap"   => N.new(h["vwap"].to_s),
+          "volume" => N.new(h["volume"].to_s),
+          "bid"    => N.new(h["bid"]),
+          "ask"    => N.new(h["ask"]),
+          "ltimestamp" => Time.now.to_i,
       }
     end
 
+    # Get order book.
+    # @return [hash] array of market depth
+    def depth
+      have_key?
+      h = get_ssl(@url_public + "depth/btc_jpy")
+      {
+        "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "bids" => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "timestampl" => Time.now.to_i,
+      }
+    end
 
-    # Update market information.
-    # @abstract
-    # @return ?
-    def update
-      @ticker = get_ticker
+    #############################################################
+    # API for private user data and trading
+    #############################################################
+
+    # Get account balance
+    def balance
+      have_key?
+      post_ssl(@url_private,
+               "get_info",
+               {})
     end
 
     # Bought the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # Abstract Method.
-    # @param [BigDecimal] rate
-    # @param [BigDecimal] amount
+    # @param [N] rate
+    # @param [N] amount
     # @return [hash] history_order_hash
-    def buy(rate, amount=BigDecimal(0))
+    def buy(rate, amount=N.new(0))
       have_key?
-      post_ssl(@zaif_trade_url,
+      post_ssl(@url_private,
                "trade",
                {
                    "currency_pair" => "btc_jpy",
@@ -66,9 +95,9 @@ module Bot
     # @param [int] rate
     # @param [float] amount
     # @return [hash] history_order_hash
-    def sell(rate, amount=BigDecimal(0))
+    def sell(rate, amount=N.new(0))
       have_key?
-      post_ssl(@zaif_trade_url,
+      post_ssl(@url_private,
                "trade",
                {
                    "currency_pair" => "btc_jpy",
@@ -105,7 +134,7 @@ module Bot
               raise APIErrorException, json["error"] if json.is_a?(Hash) && json.has_key?("error")
               return json
             else
-              raise ConnectionFailedException, "Failed to connect to zaif."
+              raise ConnectionFailedException, "Failed to connect to #{@name}."
           end
         }
       rescue
@@ -140,7 +169,7 @@ module Bot
               raise APIErrorException, json["error"] if json.is_a?(Hash) && json["success"] == 0
               return json["return"]
             else
-              raise ConnectionFailedException, "Failed to connect to zaif: " + response.value
+              raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
           end
         }
       rescue

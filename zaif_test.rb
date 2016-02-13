@@ -1,14 +1,14 @@
 require 'test-unit'
 require_relative './zaif.rb'
 require 'pp'
-require 'bigdecimal'
+require 'bigdecimal'            # http://docs.ruby-lang.org/ja/2.2.0/class/BigDecimal.html
 
 class Zaif_Test < Test::Unit::TestCase
 
   # Called before every test method runs. Can be used
   # to set up fixture information.
   def setup
-    @zaif = Bot::Zaif.new
+    @marcket = Bot::Zaif.new
   end
 
   def teardown
@@ -16,39 +16,56 @@ class Zaif_Test < Test::Unit::TestCase
   end
 
   def test_ticker
-    ticker = @zaif.get_ticker
+    t = @marcket.ticker
+    pp t
 
-    pp ticker
-
-    assert(ticker["bid"].is_a?(BigDecimal))
-    assert(ticker["ask"].is_a?(BigDecimal))
-    assert(ticker["low"].is_a?(BigDecimal))
-    assert(ticker["high"].is_a?(BigDecimal))
-    assert(ticker["last"].is_a?(BigDecimal))
-    assert(ticker["volume"].is_a?(BigDecimal))
-    assert(ticker["timestamp"].is_a?(Integer))
-    assert(ticker["vwap"].is_a?(BigDecimal))
+    assert(t["bid"].is_a?(Bot::N))
+    assert(t["ask"].is_a?(Bot::N))
+    assert(t["low"].is_a?(Bot::N))
+    assert(t["high"].is_a?(Bot::N))
+    assert(t["last"].is_a?(Bot::N))
+    assert(t["volume"].is_a?(Bot::N))
+    assert(t["timestamp"].nil?)
+    assert(t["ltimestamp"].is_a?(Integer))
+    assert(t["vwap"].is_a?(Bot::N))
   end
 
   def test_update
-    @zaif.update
-    t1 = @zaif.ticker
+    t1 = @marcket.ticker
+    pp t1
     sleep 2
-    @zaif.update
-    t2 = @zaif.ticker
+    t2 = @marcket.ticker
+    pp t2
 
-    assert(t1["timestamp"] != t2["timestamp"])
+    assert(t1["ltimestamp"] != t2["ltimestamp"])
   end
 
   def test_buy
-    rate = BigDecimal(30000)
-    amount = BigDecimal("0.012")
-#    pp @zaif.buy(rate, amount)
+    rate = Bot::N.new(30000)
+    amount = Bot::N.new("0.012")
+    # pp @marcket.buy(rate, amount)
   end
 
   def test_sell
-    rate = BigDecimal(50000)
-    amount = BigDecimal("0.012")
-    pp @zaif.sell(rate, amount)
+    rate = Bot::N.new(50000)
+    amount = Bot::N.new("0.012")
+    # pp @marcket.sell(rate, amount)
   end
+
+  def test_depth
+    d = @marcket.depth
+    p d
+
+    assert(d["asks"].is_a?(Array))
+    assert(d["bids"].is_a?(Array))
+    assert(d["timestampl"].is_a?(Integer))
+  end
+
+  def test_balance
+    a = @marcket.balance
+    pp a
+
+    assert(a["funds"].is_a?(Hash))
+  end
+
 end
