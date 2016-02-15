@@ -14,7 +14,7 @@ module Bot
       @name        = "Zaif"
       @api_key     = ENV["ZAIF_KEY"]
       @api_secret  = ENV["ZAIF_SECRET"]
-      @url_public  = "https://api.zaif.jp/api/1/"
+      @url_public  = "https://api.zaif.jp/api/1"
       @url_private = "https://api.zaif.jp/tapi"
       @nonce = 0;
     end
@@ -34,7 +34,7 @@ module Bot
     #   ltimestamp: [int] ローカルタイムスタンプ
     #   volume: [N] 取引量
     def ticker
-      h = get_ssl(@url_public + "ticker/btc_jpy")
+      h = get_ssl(@url_public + "/ticker/btc_jpy")
       {
         "ask"    => N.new(h["ask"]),
         "bid"    => N.new(h["bid"]),
@@ -51,7 +51,7 @@ module Bot
     # Get order book.
     # @return [hash] array of market depth
     def depth
-      h = get_ssl(@url_public + "depth/btc_jpy")
+      h = get_ssl(@url_public + "/depth/btc_jpy")
       {
         "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
         "bids" => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
