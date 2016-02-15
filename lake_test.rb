@@ -8,7 +8,7 @@ class Lake_Test < Test::Unit::TestCase
   # Called before every test method runs. Can be used
   # to set up fixture information.
   def setup
-    @marcket = Bot::Lake.new
+    @market = Bot::Lake.new
   end
 
   def teardown
@@ -16,7 +16,7 @@ class Lake_Test < Test::Unit::TestCase
   end
 
   def test_ticker
-    t = @marcket.ticker
+    t = @market.ticker
     pp t
 
     assert(t["bid"].is_a?(Bot::N))

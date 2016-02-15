@@ -8,7 +8,7 @@ class Coincheck_Test < Test::Unit::TestCase
   # Called before every test method runs. Can be used
   # to set up fixture information.
   def setup
-    @marcket = Bot::Coincheck.new
+    @market = Bot::Coincheck.new
   end
 
   def teardown
@@ -16,7 +16,7 @@ class Coincheck_Test < Test::Unit::TestCase
   end
 
   def test_ticker
-    t = @marcket.ticker
+    t = @market.ticker
     pp t
 
     assert(t["bid"].is_a?(Bot::N))
