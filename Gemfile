@@ -6,4 +6,6 @@ ruby "2.2.0"
 
 group :development do
   gem 'yard', require: false
+  gem 'rake'
+  gem 'test-unit'
 end
