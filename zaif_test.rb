@@ -47,7 +47,7 @@ class Zaif_Test < Test::Unit::TestCase
   end
 
   def test_sell
-    rate = Bot::N.new(50000)
+    rate = Bot::N.new(70000)
     amount = Bot::N.new("0.012")
     # pp @marcket.sell(rate, amount)
   end
