@@ -51,7 +51,6 @@ module Bot
     # Get order book.
     # @return [hash] array of market depth
     def depth
-      have_key?
       h = get_ssl(@url_public + "depth/btc_jpy")
       {
         "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
