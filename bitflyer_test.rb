@@ -21,13 +21,51 @@ class Bitflyer_Test < Test::Unit::TestCase
 
     assert(t["bid"].is_a?(Bot::N))
     assert(t["ask"].is_a?(Bot::N))
-    assert(t["low"].nil?)
-    assert(t["high"].nil?)
     assert(t["last"].is_a?(Bot::N))
-    assert(t["volume"].is_a?(Bot::N))
+    assert(t["high"].nil?)
+    assert(t["low"].nil?)
     assert(t["timestamp"].is_a?(Integer))
     assert(t["ltimestamp"].is_a?(Integer))
-    assert(t["vwap"].nil?)
+    assert(t["volume"].is_a?(Bot::N))
+  end
+
+  def test_depth
+    d = @market.depth
+    pp d
+
+    assert(d["asks"].is_a?(Array))
+    assert(d["bids"].is_a?(Array))
+    assert(d["ltimestamp"].is_a?(Integer))
+  end
+
+  def test_update
+    t1 = @market.ticker
+    pp t1
+    sleep 2
+    t2 = @market.ticker
+    pp t2
+
+    assert(t1["ltimestamp"] != t2["ltimestamp"])
+  end
+
+  def test_balance
+    a = @market.balance
+    pp a
+
+    assert(a[0].is_a?(Hash))
+    assert(a[1].is_a?(Hash))
+  end
+
+  def test_buy
+    rate = Bot::N.new(30000)
+    amount = Bot::N.new("0.012")
+    # pp @market.buy(rate, amount)
+  end
+
+  def test_sell
+    rate = Bot::N.new(70000)
+    amount = Bot::N.new("0.012")
+    # pp @market.sell(rate, amount)
   end
 
 end
