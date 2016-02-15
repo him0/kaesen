@@ -31,20 +31,21 @@ module Bot
     #   high: [N] 高値    
     #   low: [N] 安値     
     #   timestamp: [nil]
-    #   timestampl: [int] ローカルタイムスタンプ
+    #   ltimestamp: [int] ローカルタイムスタンプ
     #   volume: [N] 取引量
     def ticker
       h = get_ssl(@url_public + "/Ticker?pair=XBTJPY")
       h = h["XXBTZJPY"]
       {
-          "last"   => N.new(h["c"][0]),
-          "high"   => N.new(h["h"][1]),
-          "low"    => N.new(h["l"][1]),
-          "volume" => N.new(h["v"][1]),
-          "bid"    => N.new(h["b"][0]),
-          "ask"    => N.new(h["a"][0]),
-          "ltimestamp" => Time.now.to_i,
-          "vwap"   => N.new(h["p"][1]),
+        "ask"    => N.new(h["a"][0]),
+        "bid"    => N.new(h["b"][0]),
+        "last"   => N.new(h["c"][0]),
+        "high"   => N.new(h["h"][1]),
+        "low"    => N.new(h["l"][1]),
+        # "timestamp" is not supply
+        "ltimestamp" => Time.now.to_i,
+        "volume" => N.new(h["v"][1]),
+        "vwap"   => N.new(h["p"][1]) # additional param
       }
     end
 

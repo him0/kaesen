@@ -31,18 +31,19 @@ module Bot
     #   high: [N] 高値    
     #   low: [N] 安値     
     #   timestamp: [nil]
-    #   timestampl: [int] ローカルタイムスタンプ
+    #   ltimestamp: [int] ローカルタイムスタンプ
     #   volume: [N] 取引量
     def ticker
       h = get_ssl(@url_public + "/ticker")
       {
-          "last"   => N.new(h["last"]),
-          "high"   => N.new(h["high"]),
-          "low"    => N.new(h["low"]),
-          "volume" => N.new(h["vol"].to_s), # to_s がないと誤差が生じる
-          "bid"    => N.new(h["buy"]),
-          "ask"    => N.new(h["sell"]),
-          "ltimestamp" => Time.now.to_i,
+        "ask"    => N.new(h["sell"]),
+        "bid"    => N.new(h["buy"]),
+        "last"   => N.new(h["last"]),
+        "high"   => N.new(h["high"]),
+        "low"    => N.new(h["low"]),
+        # "timestamp" is not supply
+        "ltimestamp" => Time.now.to_i,
+        "volume" => N.new(h["vol"].to_s), # to_s がないと誤差が生じる
       }
     end
 

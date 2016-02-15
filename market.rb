@@ -32,7 +32,7 @@ module Bot
       #   high: [N] 高値    
       #   low: [N] 安値     
       #   timestamp: [int] タイムスタンプ(提供していない取引所もある)
-      #   timestampl: [int] ローカルタイムスタンプ
+      #   ltimestamp: [int] ローカルタイムスタンプ
       #   volume: [N] 取引量
       def ticker
         raise NotImplemented.new()

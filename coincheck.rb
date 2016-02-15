@@ -30,19 +30,19 @@ module Bot
     #   high: [N] 高値    
     #   low: [N] 安値     
     #   timestamp: [nil]
-    #   timestampl: [int] ローカルタイムスタンプ
+    #   ltimestamp: [int] ローカルタイムスタンプ
     #   volume: [N] 取引量
     def ticker
       h = get_ssl(@url_public + "/api/ticker")
       {
-          "last"   => N.new(h["last"]),
-          "high"   => N.new(h["high"]),
-          "low"    => N.new(h["low"]),
-          "volume" => N.new(h["volume"]), # h["volume"] は String
-          "bid"    => N.new(h["bid"]),
-          "ask"    => N.new(h["ask"]),
-          "timestamp" => h["timestamp"],
-          "ltimestamp" => Time.now.to_i,
+        "ask"    => N.new(h["ask"]),
+        "bid"    => N.new(h["bid"]),
+        "last"   => N.new(h["last"]),
+        "high"   => N.new(h["high"]),
+        "low"    => N.new(h["low"]),
+        "timestamp" => h["timestamp"],
+        "ltimestamp" => Time.now.to_i,
+        "volume" => N.new(h["volume"]), # h["volume"] は String
       }
     end
 

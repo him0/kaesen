@@ -31,19 +31,20 @@ module Bot
     #   high: [N] 高値    
     #   low: [N] 安値     
     #   timestamp: [nil]
-    #   timestampl: [int] ローカルタイムスタンプ
+    #   ltimestamp: [int] ローカルタイムスタンプ
     #   volume: [N] 取引量
     def ticker
       h = get_ssl(@url_public + "ticker/btc_jpy")
-      @ticker = {
-          "last"   => N.new(h["last"]),
-          "high"   => N.new(h["high"]),
-          "low"    => N.new(h["low"]),
-          "vwap"   => N.new(h["vwap"].to_s),
-          "volume" => N.new(h["volume"].to_s),
-          "bid"    => N.new(h["bid"]),
-          "ask"    => N.new(h["ask"]),
-          "ltimestamp" => Time.now.to_i,
+      {
+        "ask"    => N.new(h["ask"]),
+        "bid"    => N.new(h["bid"]),
+        "last"   => N.new(h["last"]),
+        "high"   => N.new(h["high"]),
+        "low"    => N.new(h["low"]),
+        # "timestamp" is not supply
+        "ltimestamp" => Time.now.to_i,
+        "volume" => N.new(h["volume"].to_s),
+        "vwap"   => N.new(h["vwap"].to_s) # additional param
       }
     end
 
@@ -55,7 +56,7 @@ module Bot
       {
         "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
         "bids" => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
-        "timestampl" => Time.now.to_i,
+        "ltimestamp" => Time.now.to_i,
       }
     end
 
