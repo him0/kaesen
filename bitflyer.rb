@@ -39,12 +39,14 @@ module Bot
     def ticker
       h = get_ssl(@url_public + "/getticker?product_code=BTC_JPY")
       {
-          "last"   => N.new(h["ltp"]),         # ltp は last price ?
-          "volume" => N.new(h["volume"].to_s), # to_s にしないと誤差が生じる
-          "bid"    => N.new(h["best_bid"]),
-          "ask"    => N.new(h["best_ask"]),
-          "timestamp" => DateTime.parse(h["timestamp"]).strftime('%s').to_i,
-          "ltimestamp" => Time.now.to_i,
+        "ask"    => N.new(h["best_ask"]),
+        "bid"    => N.new(h["best_bid"]),
+        "last"   => N.new(h["ltp"]),         # ltp は last price ?
+        # "high" is not supply
+        # "low" is not supply
+        "timestamp" => DateTime.parse(h["timestamp"]).strftime('%s').to_i,
+        "ltimestamp" => Time.now.to_i,
+        "volume" => N.new(h["volume"].to_s) # to_s にしないと誤差が生じる
       }
     end
 
