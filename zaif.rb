@@ -105,7 +105,7 @@ module Bot
                    "action" => "ask",
                    "price" => rate.to_i,
                    "amount" => amount.to_f.round(4),
-                   #                   "limit" => ???,
+#                   "limit" => ???,
                })
     end
 
@@ -118,7 +118,7 @@ module Bot
       return next_nonce
     end
 
-    # Connect to address via https, and return json reponse.
+    # Connect to address via https, and return json response.
     def get_ssl(address)
       uri = URI.parse(address)
       begin
@@ -146,7 +146,7 @@ module Bot
       end
     end
 
-    # Connect to address via https, and return json reponse.
+    # Connect to address via https, and return json response.
     def post_ssl(address, method, data, opt = {})
       uri = URI.parse(address)
       data["method"] = method
