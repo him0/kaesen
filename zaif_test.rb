@@ -49,6 +49,13 @@ class Zaif_Test < Test::Unit::TestCase
     assert(t1["ltimestamp"] != t2["ltimestamp"])
   end
 
+  def test_balance
+    a = @market.balance
+    pp a
+
+    assert(a["funds"].is_a?(Hash))
+  end
+
   def test_buy
     rate = Bot::N.new(30000)
     amount = Bot::N.new("0.012")
@@ -59,14 +66,6 @@ class Zaif_Test < Test::Unit::TestCase
     rate = Bot::N.new(70000)
     amount = Bot::N.new("0.012")
     # pp @market.sell(rate, amount)
-  end
-
-
-  def test_balance
-    a = @market.balance
-    pp a
-
-    assert(a["funds"].is_a?(Hash))
   end
 
 end
