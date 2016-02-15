@@ -94,13 +94,13 @@ module Bot
       def initialize
         # nil をエクセプションに変えると super で呼び出したときエラーになる
         @ticker = nil       # [hash]
-                            #   [marcket name]:
+                            #   [market name]:
         @balance = nil      # [hash]
-                            #   [marcket name]:
+                            #   [market name]:
                             #     jpy: [N] JPY, 円
                             #     btc: [N] BTC, Bitcoin
         @depth = nil        # [hash] Order book
-                            #   [marcket name]:
+                            #   [market name]:
                             #     asks: [array]
                             #       price: [N]
                             #       amount: [N]
@@ -109,25 +109,25 @@ module Bot
                             #     timestampl: [int]
       end
 
-      # Update marcket information.
+      # Update market information.
       # @param [Market]
       # @return [hash]
-      def update_ticker(marcket)
-        @ticker[marcket] = marcket.ticker
+      def update_ticker(market)
+        @ticker[market] = market.ticker
       end
 
       # Update asset information.
       # @param [Market]
       # @return [hash]
-      def update_asset(marcket)
-        @asset[marcket] = marcket.asset
+      def update_asset(market)
+        @asset[market] = market.asset
       end
 
       # Get total assets in JPY.
       # @param [Market]
       # @return [float] property
-      def asset_in_jpy(marcket)
-        (@asset[marcket]["jpy"] + @asset[marcket]["btc"] * @ticker[marcket]["last"]).to_f
+      def asset_in_jpy(market)
+        (@asset[market]["jpy"] + @asset[market]["btc"] * @ticker[market]["last"]).to_f
       end
 
       attr_reader :ticker
