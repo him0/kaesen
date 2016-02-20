@@ -86,7 +86,7 @@ module Bot
                    "action" => "bid",
                    "price" => rate.to_i,
                    "amount" => amount.to_f.round(4),
-#                   "limit" => ???,
+                   # "limit" => ???,
                })
     end
 
@@ -105,7 +105,7 @@ module Bot
                    "action" => "ask",
                    "price" => rate.to_i,
                    "amount" => amount.to_f.round(4),
-#                   "limit" => ???,
+                   # "limit" => ???,
                })
     end
 
