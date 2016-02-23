@@ -17,6 +17,7 @@ module Bot
       @api_secret  = ENV["BTCBOX_SECRET"]
       @url_public  = "https://www.btcbox.co.jp/api/v1"
       @url_private = @url_public
+      @nonce = 0
     end
 
     #############################################################
@@ -47,6 +48,70 @@ module Bot
       }
     end
 
+    # Get order book.
+    # @return [hash] array of market depth
+    def depth
+      h = get_ssl(@url_public + "/depth")
+      {
+        "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "bids" => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "ltimestamp" => Time.now.to_i,
+      }
+    end
+
+    #############################################################
+    # API for private user data and trading
+    #############################################################
+
+    # Get account balance
+    def balance
+      have_key?
+      address = @url_private + "/balance/"
+      post_ssl(address)
+    end
+
+    # Bought the amount of Bitcoin at the rate.
+    # 指数注文 買い.
+    # Abstract Method.
+    # @param [N] rate
+    # @param [N] amount
+    # @return [hash] history_order_hash
+    def buy(rate, amount=N.new(0))
+      have_key?
+      address = @url_private + "/trade_add/"
+      post_ssl(address, params = {
+        "amount" => amount.to_f.round(4),
+        "price" => rate.to_i,
+        "type" => "buy",
+      })
+    end
+
+    # Sell the amount of Bitcoin at the rate.
+    # 指数注文 売り.
+    # Abstract Method.
+    # @param [int] rate
+    # @param [float] amount
+    # @return [hash] history_order_hash
+    def sell(rate, amount=N.new(0))
+      have_key?
+      address = @url_private + "/trade_add/"
+      post_ssl(address, params = {
+        "amount" => amount.to_f.round(4),
+        "price" => rate.to_i,
+        "type" => "sell",
+      })
+    end
+
+    private
+
+    def get_nonce
+      sleep(1.1)
+      pre_nonce = @nonce
+      next_nonce = (Time.now.to_i) * 100 % 10_000_000_000
+      return pre_nonce + 1 if next_nonce <= pre_nonce
+      return next_nonce
+    end
+
     # Connect to address via https, and return json reponse.
     def get_ssl(address)
       uri = URI.parse(address)
@@ -55,7 +120,6 @@ module Bot
         https.use_ssl = true
         https.open_timeout = 5
         https.read_timeout = 15
-        # https.verify_mode = OpenSSL::SSL::VERIFY_PEER
         https.verify_depth = 5
 
         https.start {|w|
@@ -67,6 +131,36 @@ module Bot
               return json
             else
               raise ConnectionFailedException, "Failed to connect to #{@name}."
+          end
+        }
+      rescue
+        raise
+      end
+    end
+
+    def post_ssl(address, params={})
+      uri = URI.parse(address)
+      params["key"] = @api_key
+      params["nonce"] = get_nonce
+      key = Digest::MD5.hexdigest(@api_secret)
+      data = URI.encode_www_form(params)
+      sign = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), key, data)
+      params["signature"] = sign
+
+      begin
+        req = Net::HTTP::Post.new(uri)
+        req.set_form(params)
+        https = Net::HTTP.new(uri.host, uri.port)
+        https.use_ssl = true
+
+        https.start {|w|
+          response = w.request(req)
+          case response
+            when Net::HTTPSuccess
+              json = JSON.parse(response.body)
+              return json
+            else
+              raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
           end
         }
       rescue

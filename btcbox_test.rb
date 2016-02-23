@@ -30,4 +30,42 @@ class Btcbox_Test < Test::Unit::TestCase
     assert(t["vwap"].nil?)
   end
 
+  def test_depth
+    d = @market.depth
+    p d
+
+    assert(d["asks"].is_a?(Array))
+    assert(d["bids"].is_a?(Array))
+    assert(d["ltimestamp"].is_a?(Integer))
+  end
+
+  def test_update
+    t1 = @market.ticker
+    pp t1
+    sleep 2
+    t2 = @market.ticker
+    pp t2
+
+    assert(t1["ltimestamp"] != t2["ltimestamp"])
+  end
+
+  def test_balance
+    a = @market.balance
+    pp a
+
+    assert(a.is_a?(Hash))
+  end
+
+  def test_buy
+    rate = Bot::N.new(30000)
+    amount = Bot::N.new("0.012")
+    # pp @market.buy(rate, amount)
+  end
+
+  def test_sell
+    rate = Bot::N.new(70000)
+    amount = Bot::N.new("0.012")
+    # pp @market.sell(rate, amount)
+  end
+
 end
