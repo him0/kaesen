@@ -51,6 +51,13 @@ module Bot
 
       # Get account balance.
       # @abstract
+      # @return [hash] account_balance_hash
+      #   jpy: [hash]
+      #      amount: [N] 総日本円
+      #      available: [N] 取引可能な日本円
+      #   btc [hash]
+      #      amount: [N] 総BTC
+      #      available: [N] 取引可能なBTC
       def balance
         raise NotImplemented.new()
       end
