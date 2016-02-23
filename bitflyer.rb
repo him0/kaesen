@@ -135,31 +135,21 @@ module Bot
 
     private
 
-    def get_nonce
-      pre_nonce = @nonce
-      next_nonce = (Time.now.to_i) * 100 % 1_000_000_000
-      return pre_nonce + 1 if next_nonce <= pre_nonce
-      return next_nonce
-    end
-
-    def get_sign(uri, method, nonce, body="")
-      text = nonce.to_s + method + uri.request_uri + body
-      secret = @api_secret
-
-      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
+    def initialize_https(uri)
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      https.open_timeout = 5
+      https.read_timeout = 15
+      https.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      https.verify_depth = 5
+      https
     end
 
     # Connect to address via https, and return json response.
     def get_ssl(address)
       uri = URI.parse(address)
       begin
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        https.open_timeout = 5
-        https.read_timeout = 15
-        # https.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        https.verify_depth = 5
-
+        https = initialize_https(uri)
         https.start {|w|
           response = w.get(uri.request_uri)
           case response
@@ -176,27 +166,39 @@ module Bot
       end
     end
 
-    def get_ssl_with_sign(address, body="")
+    def get_nonce
+      pre_nonce = @nonce
+      next_nonce = (Time.now.to_i) * 100 % 1_000_000_000
+      return pre_nonce + 1 if next_nonce <= pre_nonce
+      return next_nonce
+    end
 
+    def get_sign(uri, method, nonce, body="")
+      text = nonce.to_s + method + uri.request_uri + body
+      secret = @api_secret
+
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
+    end
+
+    def get_headers(uri, method, nonce, body="")
+      {
+        "ACCESS-KEY" => @api_key,
+        "ACCESS-TIMESTAMP" => nonce.to_s,
+        "ACCESS-SIGN" => get_sign(uri, method, nonce, body),
+        "Content-Type" => "application/json",
+      }
+    end
+
+    def get_ssl_with_sign(address, body="")
       uri = URI.parse(address)
       nonce = get_nonce
-      sign = get_sign(uri, "GET", nonce, body)
+      headers = get_headers(uri, "GET", nonce, body)
 
       begin
-        req = Net::HTTP::Get.new(uri)
-        req["ACCESS-KEY"] = @api_key
-        req["ACCESS-TIMESTAMP"] = nonce
-        req["ACCESS-SIGN"] = sign
-        req["Content-Type"] = "application/json"
+        req = Net::HTTP::Get.new(uri, headers)
         req.body = body
 
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        https.open_timeout = 5
-        https.read_timeout = 15
-        https.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        https.verify_depth = 5
-
+        https = https = initialize_https(uri)
         https.start {|w|
           response = w.request(req)
           case response
@@ -215,26 +217,15 @@ module Bot
     end
 
     def post_ssl_with_sign(address, body="")
-
       uri = URI.parse(address)
       nonce = get_nonce
-      sign = get_sign(uri, "POST", nonce, body)
+      headers = get_headers(uri, "POST", nonce, body)
 
       begin
-        req = Net::HTTP::Post.new(uri)
-        req["ACCESS-KEY"] = @api_key
-        req["ACCESS-TIMESTAMP"] = nonce
-        req["ACCESS-SIGN"] = sign
-        req["Content-Type"] = "application/json"
+        req = Net::HTTP::Post.new(uri, headers)
         req.body = body
 
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        https.open_timeout = 5
-        https.read_timeout = 15
-        https.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        https.verify_depth = 5
-
+        https = initialize_https(uri)
         https.start {|w|
           response = w.request(req)
           case response
