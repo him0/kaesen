@@ -123,24 +123,22 @@ module Bot
 
     private
 
-    def get_nonce
-      sleep(1.1)
-      pre_nonce = @nonce
-      next_nonce = (Time.now.to_i) * 100 % 10_000_000_000
-      return pre_nonce + 1 if next_nonce <= pre_nonce
-      return next_nonce
+    def initialize_https(uri)
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      https.open_timeout = 5
+      https.read_timeout = 15
+      https.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      https.verify_depth = 5
+      https
     end
 
     # Connect to address via https, and return json reponse.
     def get_ssl(address)
       uri = URI.parse(address)
-      begin
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        https.open_timeout = 5
-        https.read_timeout = 15
-        https.verify_depth = 5
 
+      begin
+        https = initialize_https(uri)
         https.start {|w|
           response = w.get(uri.request_uri)
           case response
@@ -157,6 +155,14 @@ module Bot
       end
     end
 
+    def get_nonce
+      sleep(1.1)
+      pre_nonce = @nonce
+      next_nonce = (Time.now.to_i) * 100 % 10_000_000_000
+      return pre_nonce + 1 if next_nonce <= pre_nonce
+      return next_nonce
+    end
+
     def post_ssl(address, params={})
       uri = URI.parse(address)
       params["key"] = @api_key
@@ -169,9 +175,8 @@ module Bot
       begin
         req = Net::HTTP::Post.new(uri)
         req.set_form(params)
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
 
+        https = initialize_https(uri)
         https.start {|w|
           response = w.request(req)
           case response
