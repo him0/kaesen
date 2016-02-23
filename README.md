@@ -1,13 +1,25 @@
 # jpy2btcRobot
 
 ## Description
-日本国内のBitcoin交換所で日本円取引をするBotです．
+日本国内のBitcoin交換所で日本円取引をするためのRubyのクライアントライブラリです．
 
-This is the Robot that exchange Bitcoin to JPY at Exchange Market in Japan.
+This is the Ruby Client Library that exchange Bitcoin to JPY at Exchange Market in Japan.
 
-## Current Status
+## Support Market
 
-* This support bitFlyerLightning, Coincheck, and Zaif.
-* Get Bid and Ask price
-* Get current Property
-* Send Bitcoin
+### Now suppported markets
+
+  + Bitflyer
+  + Btcbox
+  + Coinckeck
+  + Zaif
+
+### Not yet
+  + LakeBTC
+  + Kraken
+
+## mathod
+  + get ticker, depth
+  + get account balance
+  + make order
+   
