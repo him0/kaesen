@@ -16,7 +16,7 @@ module Bot
       @api_secret  = ENV["COINCHECK_SECRET"]
       @url_public  = "https://coincheck.jp"
       @url_private = @url_public
-      @nonce = 0;
+      @nonce = 0
     end
 
     #############################################################
