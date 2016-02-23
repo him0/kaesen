@@ -76,7 +76,6 @@ module Bot
       have_key?
       address = @url_private + "/balance/"
       h = post_ssl(address)
-      print(h)
       {
         "jpy" => {
           "amount" => N.new(h["jpy_balance"].to_s).add(h["jpy_lock"].to_s),
