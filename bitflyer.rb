@@ -66,10 +66,29 @@ module Bot
     # API for private user data and trading
     #############################################################
 
-    # Get account balance
+    # Get account balance.
+    # @abstract
+    # @return [hash] account_balance_hash
+    #   jpy: [hash]
+    #      amount: [N] 総日本円
+    #      available: [N] 取引可能な日本円
+    #   btc [hash]
+    #      amount: [N] 総BTC
+    #      available: [N] 取引可能なBTC
     def balance
       have_key?
-      get_ssl_with_sign(@url_private + "/me/getbalance")
+      address = @url_private + "/me/getbalance"
+      h = get_ssl_with_sign(address)
+      {
+        "jpy" => {
+          "amount" => N.new(h[0]["amount"]),
+          "available" => N.new(h[0]["available"]),
+        },
+        "btc" => {
+          "amount" => N.new(h[1]["amount"]),
+          "available" => N.new(h[1]["available"]),
+        },
+      }
     end
 
     # Bought the amount of Bitcoin at the rate.
@@ -158,7 +177,6 @@ module Bot
     end
 
     def get_ssl_with_sign(address, body="")
-      have_key?
 
       uri = URI.parse(address)
       nonce = get_nonce
@@ -197,7 +215,6 @@ module Bot
     end
 
     def post_ssl_with_sign(address, body="")
-      have_key?
 
       uri = URI.parse(address)
       nonce = get_nonce

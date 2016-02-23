@@ -52,8 +52,13 @@ class Bitflyer_Test < Test::Unit::TestCase
     a = @market.balance
     pp a
 
-    assert(a[0].is_a?(Hash))
-    assert(a[1].is_a?(Hash))
+    assert(a.is_a?(Hash))
+    assert(a["jpy"].is_a?(Hash))
+    assert(a["btc"].is_a?(Hash))
+    assert(a["jpy"]["amount"].is_a?(Bot::N))
+    assert(a["jpy"]["available"].is_a?(Bot::N))
+    assert(a["btc"]["amount"].is_a?(Bot::N))
+    assert(a["btc"]["available"].is_a?(Bot::N))
   end
 
   def test_buy
