@@ -54,6 +54,12 @@ class Coincheck_Test < Test::Unit::TestCase
     pp a
 
     assert(a.is_a?(Hash))
+    assert(a["jpy"].is_a?(Hash))
+    assert(a["btc"].is_a?(Hash))
+    assert(a["jpy"]["amount"].is_a?(Bot::N))
+    assert(a["jpy"]["available"].is_a?(Bot::N))
+    assert(a["btc"]["amount"].is_a?(Bot::N))
+    assert(a["btc"]["available"].is_a?(Bot::N))
   end
 
   def test_buy

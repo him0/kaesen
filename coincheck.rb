@@ -49,6 +49,9 @@ module Bot
 
     # Get order book.
     # @return [hash] array of market depth
+    #   asks: [Array<N,N>] rate and amount
+    #   bids: [Array<N,N>] rate and amount
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def depth
       h = get_ssl(@url_public + "/api/order_books")
       {
@@ -62,10 +65,29 @@ module Bot
     # API for private user data and trading
     #############################################################
 
-    # Get account balance
+    # Get account balance.
+    # @abstract
+    # @return [hash] account_balance_hash
+    #   jpy: [hash]
+    #      amount: [N] 総日本円
+    #      available: [N] 取引可能な日本円
+    #   btc [hash]
+    #      amount: [N] 総BTC
+    #      available: [N] 取引可能なBTC
     def balance
       have_key?
-      get_ssl_with_sign(@url_private + "/api/accounts/balance")
+      address = @url_private + "/api/accounts/balance"
+      h = get_ssl_with_sign(address)
+      {
+        "jpy" => {
+          "amount" => N.new(h["jpy"] + h["jpy_reserved"]),
+          "available" => N.new(h["jpy"]),
+        },
+        "btc" => {
+          "amount" => N.new(h["btc"] + h["btc_reserved"]),
+          "available" => N.new(h["btc"]),
+        },
+      }
     end
 
     # Bought the amount of Bitcoin at the rate.
