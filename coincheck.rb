@@ -81,11 +81,11 @@ module Bot
       h = get_ssl_with_sign(address)
       {
         "jpy" => {
-          "amount" => N.new(h["jpy"] + h["jpy_reserved"]),
+          "amount" => N.new(h["jpy"]).add(h["jpy_reserved"].to_s),
           "available" => N.new(h["jpy"]),
         },
         "btc" => {
-          "amount" => N.new(h["btc"] + h["btc_reserved"]),
+          "amount" => N.new(h["btc"]).add(h["btc_reserved"].to_s),
           "available" => N.new(h["btc"]),
         },
       }
