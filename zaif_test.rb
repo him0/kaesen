@@ -53,19 +53,25 @@ class Zaif_Test < Test::Unit::TestCase
     a = @market.balance
     pp a
 
-    assert(a["funds"].is_a?(Hash))
+    assert(a.is_a?(Hash))
+    assert(a["jpy"].is_a?(Hash))
+    assert(a["btc"].is_a?(Hash))
+    assert(a["jpy"]["amount"].is_a?(Bot::N))
+    assert(a["jpy"]["available"].is_a?(Bot::N))
+    assert(a["btc"]["amount"].is_a?(Bot::N))
+    assert(a["btc"]["available"].is_a?(Bot::N))
   end
 
   def test_buy
     rate = Bot::N.new(30000)
     amount = Bot::N.new("0.012")
-    # pp @market.buy(rate, amount)
+    pp @market.buy(rate, amount)
   end
 
   def test_sell
     rate = Bot::N.new(70000)
     amount = Bot::N.new("0.012")
-    # pp @market.sell(rate, amount)
+    pp @market.sell(rate, amount)
   end
 
 end

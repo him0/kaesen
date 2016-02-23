@@ -63,12 +63,32 @@ module Bot
     # API for private user data and trading
     #############################################################
 
-    # Get account balance
+    # Get account balance.
+    # @abstract
+    # @return [hash] account_balance_hash
+    #   jpy: [hash]
+    #      amount: [N] 総日本円
+    #      available: [N] 取引可能な日本円
+    #   btc [hash]
+    #      amount: [N] 総BTC
+    #      available: [N] 取引可能なBTC
     def balance
       have_key?
-      post_ssl(@url_private,
+      h = post_ssl(@url_private,
                "get_info",
-               {})
+               {}
+      )
+      print(h)
+      {
+        "jpy" => {
+          "amount" => N.new(h["deposit"]["jpy"].to_s),
+          "available" => N.new(h["funds"]["jpy"].to_s),
+        },
+        "btc" => {
+          "amount" => N.new(h["deposit"]["btc"].to_s),
+          "available" => N.new(h["funds"]["btc"].to_s),
+        },
+      }
     end
 
     # Bought the amount of Bitcoin at the rate.
