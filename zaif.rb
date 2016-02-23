@@ -78,7 +78,6 @@ module Bot
                "get_info",
                {}
       )
-      print(h)
       {
         "jpy" => {
           "amount" => N.new(h["deposit"]["jpy"].to_s),
