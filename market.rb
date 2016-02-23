@@ -145,11 +145,16 @@ module Bot
     end
 
     class N < BigDecimal
-
       # @param [String], [Bignum], [Float], [Rational], or [BigDecimal]
       # @return [N]
       def initialize(s,n = 0)
         super(s,n) # 「n が 0 または省略されたときは、n の値は s の有効桁数とみなされます。」
+      end
+
+      # @param [String], [Bignum], [Float], [Rational], or [BigDecimal]
+      # @return [N]
+      def add(s)
+        initialize(self.to_s + "+" + s.to_s)
       end
 
       # 売買する人にとって可読性が高い表現にする
