@@ -65,13 +65,13 @@ class Zaif_Test < Test::Unit::TestCase
   def test_buy
     rate = Bot::N.new(30000)
     amount = Bot::N.new("0.012")
-    pp @market.buy(rate, amount)
+    # pp @market.buy(rate, amount)
   end
 
   def test_sell
     rate = Bot::N.new(70000)
     amount = Bot::N.new("0.012")
-    pp @market.sell(rate, amount)
+    # pp @market.sell(rate, amount)
   end
 
 end
