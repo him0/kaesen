@@ -9,6 +9,7 @@ module Bot
   # BtcBox Wrapper Class
   # https://www.btcbox.co.jp/help/api.html
   class Btcbox < Market
+    @@nonce = 0
 
     def initialize()
       super()
@@ -155,11 +156,16 @@ module Bot
     end
 
     def get_nonce
-      sleep(1.1)
-      pre_nonce = @nonce
+      pre_nonce = @@nonce
       next_nonce = (Time.now.to_i) * 100 % 10_000_000_000
-      return pre_nonce + 1 if next_nonce <= pre_nonce
-      return next_nonce
+
+      if next_nonce <= pre_nonce
+        @@nonce = pre_nonce + 1
+      else
+        @@nonce = next_nonce
+      end
+
+      return @@nonce
     end
 
     def post_ssl(address, params={})

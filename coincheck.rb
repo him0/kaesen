@@ -8,6 +8,7 @@ module Bot
   # Coincheck Wrapper Class
   # https://coincheck.jp/documents/exchange/api?locale=ja
   class Coincheck < Market
+    @@nonce = 0
 
     def initialize()
       super()
@@ -127,12 +128,17 @@ module Bot
     private
 
     def get_nonce
-      sleep(1.1)
       pre_nonce = @nonce
       # 桁数揃えないとエラーになる
       next_nonce = (Time.now.to_i) * 100 % 10_000_000_000
-      return pre_nonce + 1 if next_nonce <= pre_nonce
-      return next_nonce
+
+      if next_nonce <= pre_nonce
+        @@nonce = pre_nonce + 1
+      else
+        @@nonce = next_nonce
+      end
+
+      return @@nonce
     end
 
     def get_sign(address, nonce, body="")

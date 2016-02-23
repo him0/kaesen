@@ -12,6 +12,7 @@ module Bot
   ## . Private API は 1 分間に約 200 回を上限とします。
   ## . IP アドレスごとに 1 分間に約 500 回を上限とします。
   class Bitflyer < Market
+    @@nonce = 0
 
     def initialize()
       super()
@@ -167,10 +168,16 @@ module Bot
     end
 
     def get_nonce
-      pre_nonce = @nonce
+      pre_nonce = @@nonce
       next_nonce = (Time.now.to_i) * 100 % 1_000_000_000
-      return pre_nonce + 1 if next_nonce <= pre_nonce
-      return next_nonce
+
+      if next_nonce <= pre_nonce
+        @@nonce = pre_nonce + 1
+      else
+        @@nonce = next_nonce
+      end
+
+      return @@nonce
     end
 
     def get_sign(uri, method, nonce, body="")
