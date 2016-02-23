@@ -8,6 +8,7 @@ module Bot
   # Zaif Wrapper Class
   # https://corp.zaif.jp/api-docs/
   class Zaif < Market
+    @@nonce = 0
 
     def initialize()
       super()
@@ -16,7 +17,6 @@ module Bot
       @api_secret  = ENV["ZAIF_SECRET"]
       @url_public  = "https://api.zaif.jp/api/1"
       @url_private = "https://api.zaif.jp/tapi"
-      @nonce = 0;
     end
 
     #############################################################
@@ -132,10 +132,16 @@ module Bot
     private
 
     def get_nonce
-      pre_nonce = @nonce
+      pre_nonce = @@nonce
       next_nonce = (Time.now.to_i) * 100 % 1_000_000_000
-      return pre_nonce + 1 if next_nonce <= pre_nonce
-      return next_nonce
+
+      if next_nonce <= pre_nonce
+        @@nonce = pre_nonce + 1
+      else
+        @@nonce = next_nonce
+      end
+
+      return @@nonce
     end
 
     # Connect to address via https, and return json response.
