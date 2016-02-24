@@ -49,9 +49,14 @@ module Bot
     end
 
     # Get order book.
+    # @abstract
     # @return [hash] array of market depth
-    #   asks: [Array<N,N>] rate and amount
-    #   bids: [Array<N,N>] rate and amount
+    #   asks: [Array] 売りオーダー
+    #      price : [N]
+    #      size : [N]
+    #   bids: [Array] 買いオーダー
+    #      price : [N]
+    #      size : [N]
     #   ltimestamp: [int] ローカルタイムスタンプ
     def depth
       h = get_ssl(@url_public + "/api/order_books")

@@ -41,6 +41,13 @@ module Bot
       # Get order book.
       # @abstract
       # @return [hash] array of market depth
+      #   asks: [Array] 売りオーダー
+      #      price : [N]
+      #      size : [N]
+      #   bids: [Array] 買いオーダー
+      #      price : [N]
+      #      size : [N]
+      #   ltimestamp: [int] ローカルタイムスタンプ
       def depth
         raise NotImplemented.new()
       end

@@ -36,7 +36,7 @@ module Bot
     #   high: [N] 高値    
     #   low: [N] 安値     
     #   timestamp: [nil]
-    #   timestampl: [int] ローカルタイムスタンプ
+    #   ltimestamp: [int] ローカルタイムスタンプ
     #   volume: [N] 取引量
     def ticker
       h = get_ssl(@url_public + "/getticker?product_code=BTC_JPY")
@@ -53,7 +53,15 @@ module Bot
     end
 
     # Get order book.
+    # @abstract
     # @return [hash] array of market depth
+    #   asks: [Array] 売りオーダー
+    #      price : [N]
+    #      size : [N]
+    #   bids: [Array] 買いオーダー
+    #      price : [N]
+    #      size : [N]
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def depth
       h = get_ssl(@url_public + "/getboard?product_code=BTC_JPY")
       {
