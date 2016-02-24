@@ -65,6 +65,7 @@ module Bot
       #   btc [hash]
       #      amount: [N] 総BTC
       #      available: [N] 取引可能なBTC
+      #   ltimestamp: [int] ローカルタイムスタンプ
       def balance
         raise NotImplemented.new()
       end

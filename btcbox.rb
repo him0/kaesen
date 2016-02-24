@@ -81,6 +81,7 @@ module Bot
     #   btc [hash]
     #      amount: [N] 総BTC
     #      available: [N] 取引可能なBTC
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def balance
       have_key?
       address = @url_private + "/balance/"
@@ -94,6 +95,7 @@ module Bot
           "amount" => N.new(h["btc_balance"].to_s).add(h["btc_lock"].to_s),
           "available" => N.new(h["btc_balance"].to_s),
         },
+        "ltimestamp" => Time.now.to_i,
       }
     end
 

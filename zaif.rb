@@ -80,6 +80,7 @@ module Bot
     #   btc [hash]
     #      amount: [N] 総BTC
     #      available: [N] 取引可能なBTC
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def balance
       have_key?
       h = post_ssl(@url_private,
@@ -95,6 +96,7 @@ module Bot
           "amount" => N.new(h["deposit"]["btc"].to_s),
           "available" => N.new(h["funds"]["btc"].to_s),
         },
+        "ltimestamp" => Time.now.to_i,
       }
     end
 
