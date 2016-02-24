@@ -34,10 +34,10 @@ module Bot
     #   bid: [N] 最良買気配値
     #   last: [N] 最近値(?用語要チェック), last price
     #   high: [N] 高値    
-    #   low: [N] 安値     
-    #   timestamp: [nil]
-    #   ltimestamp: [int] ローカルタイムスタンプ
+    #   low: [N] 安値
     #   volume: [N] 取引量
+    #   ltimestamp: [int] ローカルタイムスタンプ
+    #   timestamp: [int] タイムスタンプ
     def ticker
       h = get_ssl(@url_public + "/getticker?product_code=BTC_JPY")
       {
@@ -46,9 +46,9 @@ module Bot
         "last"       => N.new(h["ltp"]),         # ltp は last price ?
         # "high" is not supply
         # "low" is not supply
-        "timestamp"  => DateTime.parse(h["timestamp"]).strftime('%s').to_i,
+        "volume"     => N.new(h["volume"].to_s), # to_s にしないと誤差が生じる
         "ltimestamp" => Time.now.to_i,
-        "volume"     => N.new(h["volume"].to_s) # to_s にしないと誤差が生じる
+        "timestamp"  => DateTime.parse(h["timestamp"]).strftime('%s').to_i,
       }
     end
 

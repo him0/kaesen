@@ -30,10 +30,9 @@ module Bot
       #   bid: [N] 最良買気配値
       #   last: [N] 最近値(?用語要チェック), last price
       #   high: [N] 高値    
-      #   low: [N] 安値     
-      #   timestamp: [int] タイムスタンプ(提供していない取引所もある)
-      #   ltimestamp: [int] ローカルタイムスタンプ
+      #   low: [N] 安値
       #   volume: [N] 取引量
+      #   ltimestamp: [int] ローカルタイムスタンプ
       def ticker
         raise NotImplemented.new()
       end

@@ -19,20 +19,21 @@ class Coincheck_Test < Test::Unit::TestCase
     t = @market.ticker
     pp t
 
-    assert(t["bid"].is_a?(Bot::N))
+    assert(t.is_a?(Hash))
+
     assert(t["ask"].is_a?(Bot::N))
-    assert(t["low"].is_a?(Bot::N))
-    assert(t["high"].is_a?(Bot::N))
+    assert(t["bid"].is_a?(Bot::N))
     assert(t["last"].is_a?(Bot::N))
+    assert(t["high"].is_a?(Bot::N))
+    assert(t["low"].is_a?(Bot::N))
     assert(t["volume"].is_a?(Bot::N))
-    assert(t["timestamp"].is_a?(Integer))
     assert(t["ltimestamp"].is_a?(Integer))
-    assert(t["vwap"].nil?)
+    assert(t["timestamp"].is_a?(Integer))
   end
 
   def test_depth
     d = @market.depth
-    p d
+    pp d
 
     assert(d["asks"].is_a?(Array))
     assert(d["bids"].is_a?(Array))

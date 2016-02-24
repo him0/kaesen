@@ -19,14 +19,16 @@ class Bitflyer_Test < Test::Unit::TestCase
     t = @market.ticker
     pp t
 
-    assert(t["bid"].is_a?(Bot::N))
+    assert(t.is_a?(Hash))
+
     assert(t["ask"].is_a?(Bot::N))
+    assert(t["bid"].is_a?(Bot::N))
     assert(t["last"].is_a?(Bot::N))
     assert(t["high"].nil?)
     assert(t["low"].nil?)
-    assert(t["timestamp"].is_a?(Integer))
-    assert(t["ltimestamp"].is_a?(Integer))
     assert(t["volume"].is_a?(Bot::N))
+    assert(t["ltimestamp"].is_a?(Integer))
+    assert(t["timestamp"].is_a?(Integer))
   end
 
   def test_depth
