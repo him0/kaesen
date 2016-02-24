@@ -134,6 +134,16 @@ module Bot
 
     private
 
+    def initialize_https(uri)
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      https.open_timeout = 5
+      https.read_timeout = 15
+      https.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      https.verify_depth = 5
+      https
+    end
+
     def get_nonce
       pre_nonce = @nonce
       # 桁数揃えないとエラーになる
@@ -157,13 +167,7 @@ module Bot
     def get_ssl(address)
       uri = URI.parse(address)
       begin
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        https.open_timeout = 5
-        https.read_timeout = 15
-        https.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        https.verify_depth = 5
-
+        https = initialize_https(uri)
         https.start {|w|
           response = w.get(uri.request_uri)
           case response
@@ -180,34 +184,32 @@ module Bot
       end
     end
 
+    def get_headers(address, nonce, body="")
+      {
+        "ACCESS-KEY" => @api_key,
+        "ACCESS-NONCE" => nonce.to_s,
+        "ACCESS-SIGNATURE" => get_sign(address, nonce, body.to_json),
+        "Content-Type" => "application/json",
+      }
+    end
+
     # Connect to address via https, and return json response.
     def get_ssl_with_sign(address,body="")
       uri = URI.parse(address)
       nonce = get_nonce
-      sign = get_sign(address, nonce, body.to_json)
+      headers = get_headers(address, nonce, body)
 
       begin
-        req = Net::HTTP::Get.new(uri)
-        req["ACCESS-KEY"] = @api_key
-        req["ACCESS-NONCE"] = nonce
-        req["ACCESS-SIGNATURE"] = sign
-        req["Content-Type"] = "application/json"
+        req = Net::HTTP::Get.new(uri, headers)
         req.body = body.to_json
 
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-        https.open_timeout = 5
-        https.read_timeout = 15
-        https.verify_mode = OpenSSL::SSL::VERIFY_PEER
-        https.verify_depth = 5
-
+        https = initialize_https(uri)
         https.start {|w|
           response = w.request(req)
           case response
             when Net::HTTPSuccess
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
-              raise APIErrorException, json["error_message"] if json.is_a?(Hash) && json["status"] != nil
               return json
             else
               raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
@@ -221,20 +223,13 @@ module Bot
     def post_ssl_with_sign(address, body="")
       uri = URI.parse(address)
       nonce = get_nonce
-      sign = get_sign(address, nonce, body.to_json)
+      headers = get_headers(address, nonce, body)
 
       begin
-        req = Net::HTTP::Post.new(uri)
-        req["ACCESS-KEY"] = @api_key
-        req["ACCESS-NONCE"] = nonce
-        req["ACCESS-SIGNATURE"] = sign
-        req["Content-Type"] = "application/json"
+        req = Net::HTTP::Post.new(uri, headers)
         req.body = body.to_json
 
-        https = Net::HTTP.new(uri.host, uri.port)
-        https.use_ssl = true
-
-
+        https = initialize_https(uri)
         https.start {|w|
           response = w.request(req)
           case response
