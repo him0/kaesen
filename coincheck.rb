@@ -98,38 +98,70 @@ module Bot
       }
     end
 
-    # Bought the amount of Bitcoin at the rate.
+    # Buy the amount of Bitcoin at the rate.
     # 指数注文 買い.
-    # Abstract Method.
+    # @abstract
     # @param [N] rate
     # @param [N] amount
     # @return [hash] history_order_hash
+    #   success: [String]
+    #   id: [int] order id at the market
+    #   rate: [N]
+    #   amount: [N]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] ローカルタイムスタンプ
+    #   timestamp: [int] タイムスタンプ
     def buy(rate, amount=N.new(0))
       have_key?
-      post_ssl_with_sign(@url_private + "/api/exchange/orders",
+      h = post_ssl_with_sign(@url_private + "/api/exchange/orders",
                          {
                            "rate" => rate.to_i,
                            "amount" => amount.to_f.round(4),
                            "order_type" => "buy",
                            "pair" => "btc_jpy",
                          })
+      {
+        "success" => h["success"].to_s,
+        "id" => h["id"],
+        "rate" => N.new(h["rate"]),
+        "amount" => N.new(h["size"].to_s),
+        "order_type" => h["order_type"],
+        "ltimestamp" => Time.now.to_i,
+        "timestamp" => DateTime.parse(h["created_at"]).to_time.to_i,
+      }
     end
 
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
-    # Abstract Method.
-    # @param [int] rate
-    # @param [float] amount
+    # @abstract
+    # @param [N] rate
+    # @param [N] amount
     # @return [hash] history_order_hash
+    #   success: [String]
+    #   id: [int] order id at the market
+    #   rate: [N]
+    #   amount: [N]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] ローカルタイムスタンプ
+    #   timestamp: [int] タイムスタンプ
     def sell(rate, amount=N.new(0))
       have_key?
-      post_ssl_with_sign(@url_private + "/api/exchange/orders",
+      h = post_ssl_with_sign(@url_private + "/api/exchange/orders",
                          {
                          "rate" => rate.to_i,
                          "amount" => amount.to_f.round(4),
                          "order_type" => "sell",
                          "pair" => "btc_jpy",
                          })
+      {
+        "success" => h["success"].to_s,
+        "id" => h["id"],
+        "rate" => N.new(h["rate"]),
+        "amount" => N.new(h["size"].to_s),
+        "order_type" => h["order_type"],
+        "ltimestamp" => Time.now.to_i,
+        "timestamp" => DateTime.parse(h["created_at"]).to_time.to_i,
+      }
     end
 
     private

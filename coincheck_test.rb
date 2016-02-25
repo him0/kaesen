@@ -8,6 +8,7 @@ class Coincheck_Test < Test::Unit::TestCase
   # Called before every test method runs. Can be used
   # to set up fixture information.
   def setup
+    sleep(1.1)
     @market = Bot::Coincheck.new
   end
 
@@ -55,6 +56,7 @@ class Coincheck_Test < Test::Unit::TestCase
     pp a
 
     assert(a.is_a?(Hash))
+
     assert(a["jpy"].is_a?(Hash))
     assert(a["btc"].is_a?(Hash))
     assert(a["jpy"]["amount"].is_a?(Bot::N))
@@ -65,14 +67,34 @@ class Coincheck_Test < Test::Unit::TestCase
 
   def test_buy
     rate = Bot::N.new(30000)
-    amount = Bot::N.new("0.012")
-    # pp @market.buy(rate, amount)
+    amount = Bot::N.new("0.010")
+    b = @market.buy(rate, amount)
+
+    assert(b.is_a?(Hash))
+
+    assert(b["success"].is_a?(String))
+    assert(b["id"].is_a?(Integer))
+    assert(b["rate"].is_a?(Bot::N))
+    assert(b["amount"].is_a?(Bot::N))
+    assert(b["order_type"].is_a?(String))
+    assert(b["ltimestamp"].is_a?(Integer))
+    assert(b["timestamp"].is_a?(Integer))
   end
 
   def test_sell
     rate = Bot::N.new(70000)
-    amount = Bot::N.new("0.012")
-    # pp @market.sell(rate, amount)
+    amount = Bot::N.new("0.010")
+    s = @market.sell(rate, amount)
+
+    assert(s.is_a?(Hash))
+
+    assert(s["success"].is_a?(String))
+    assert(s["id"].is_a?(Integer))
+    assert(s["rate"].is_a?(Bot::N))
+    assert(s["amount"].is_a?(Bot::N))
+    assert(s["order_type"].is_a?(String))
+    assert(s["ltimestamp"].is_a?(Integer))
+    assert(s["timestamp"].is_a?(Integer))
   end
 
 
