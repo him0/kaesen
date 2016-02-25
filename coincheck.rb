@@ -37,14 +37,14 @@ module Bot
     def ticker
       h = get_ssl(@url_public + "/api/ticker")
       {
-        "ask"    => N.new(h["ask"]),
-        "bid"    => N.new(h["bid"]),
-        "last"   => N.new(h["last"]),
-        "high"   => N.new(h["high"]),
-        "low"    => N.new(h["low"]),
-        "volume" => N.new(h["volume"]), # h["volume"] は String
+        "ask"        => N.new(h["ask"]),
+        "bid"        => N.new(h["bid"]),
+        "last"       => N.new(h["last"]),
+        "high"       => N.new(h["high"]),
+        "low"        => N.new(h["low"]),
+        "volume"     => N.new(h["volume"]), # h["volume"] は String
         "ltimestamp" => Time.now.to_i,
-        "timestamp" => h["timestamp"],
+        "timestamp"  => h["timestamp"],
       }
     end
 
@@ -61,8 +61,8 @@ module Bot
     def depth
       h = get_ssl(@url_public + "/api/order_books")
       {
-        "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]},
-        "bids" => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]},
+        "asks"       => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]},
+        "bids"       => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]},
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -86,12 +86,12 @@ module Bot
       address = @url_private + "/api/accounts/balance"
       h = get_ssl_with_sign(address)
       {
-        "jpy" => {
-          "amount" => N.new(h["jpy"]).add(h["jpy_reserved"].to_s),
+        "jpy"        => {
+          "amount"    => N.new(h["jpy"]).add(h["jpy_reserved"].to_s),
           "available" => N.new(h["jpy"]),
         },
-        "btc" => {
-          "amount" => N.new(h["btc"]).add(h["btc_reserved"].to_s),
+        "btc"        => {
+          "amount"    => N.new(h["btc"]).add(h["btc_reserved"].to_s),
           "available" => N.new(h["btc"]),
         },
         "ltimestamp" => Time.now.to_i,
@@ -113,21 +113,22 @@ module Bot
     #   timestamp: [int] タイムスタンプ
     def buy(rate, amount=N.new(0))
       have_key?
-      h = post_ssl_with_sign(@url_private + "/api/exchange/orders",
-                         {
-                           "rate" => rate.to_i,
-                           "amount" => amount.to_f.round(4),
-                           "order_type" => "buy",
-                           "pair" => "btc_jpy",
-                         })
+      address = @url_private + "/api/exchange/orders"
+      body = {
+         "rate"       => rate.to_i,
+         "amount"     => amount.to_f.round(4),
+         "order_type" => "buy",
+         "pair"       => "btc_jpy",
+      }
+      h = post_ssl_with_sign(address,body)
       {
-        "success" => h["success"].to_s,
-        "id" => h["id"],
-        "rate" => N.new(h["rate"]),
-        "amount" => N.new(h["size"].to_s),
+        "success"    => h["success"].to_s,
+        "id"         => h["id"],
+        "rate"       => N.new(h["rate"]),
+        "amount"     => N.new(h["size"].to_s),
         "order_type" => h["order_type"],
         "ltimestamp" => Time.now.to_i,
-        "timestamp" => DateTime.parse(h["created_at"]).to_time.to_i,
+        "timestamp"  => DateTime.parse(h["created_at"]).to_time.to_i,
       }
     end
 
@@ -146,21 +147,22 @@ module Bot
     #   timestamp: [int] タイムスタンプ
     def sell(rate, amount=N.new(0))
       have_key?
-      h = post_ssl_with_sign(@url_private + "/api/exchange/orders",
-                         {
-                         "rate" => rate.to_i,
-                         "amount" => amount.to_f.round(4),
-                         "order_type" => "sell",
-                         "pair" => "btc_jpy",
-                         })
+      address = @url_private + "/api/exchange/orders"
+      body = {
+        "rate"       => rate.to_i,
+        "amount"     => amount.to_f.round(4),
+        "order_type" => "sell",
+        "pair"       => "btc_jpy",
+      }
+      h = post_ssl_with_sign(address,body)
       {
-        "success" => h["success"].to_s,
-        "id" => h["id"],
-        "rate" => N.new(h["rate"]),
-        "amount" => N.new(h["size"].to_s),
+        "success"    => h["success"].to_s,
+        "id"         => h["id"],
+        "rate"       => N.new(h["rate"]),
+        "amount"     => N.new(h["size"].to_s),
         "order_type" => h["order_type"],
         "ltimestamp" => Time.now.to_i,
-        "timestamp" => DateTime.parse(h["created_at"]).to_time.to_i,
+        "timestamp"  => DateTime.parse(h["created_at"]).to_time.to_i,
       }
     end
 
@@ -218,10 +220,10 @@ module Bot
 
     def get_headers(address, nonce, body="")
       {
-        "ACCESS-KEY" => @api_key,
-        "ACCESS-NONCE" => nonce.to_s,
+        "ACCESS-KEY"       => @api_key,
+        "ACCESS-NONCE"     => nonce.to_s,
         "ACCESS-SIGNATURE" => get_sign(address, nonce, body.to_json),
-        "Content-Type" => "application/json",
+        "Content-Type"     => "application/json",
       }
     end
 
