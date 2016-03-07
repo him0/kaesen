@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Set Terminal
+export PS1="(Bitcoin)"${PS1}
+
+# Coincheck
+export COINCHECK_KEY=''
+export COINCHECK_SECRET=''
+
+# Kraken
+export KRAKEN_KEY=''
+export KRAKEN_SECRET=''
+
+# zaif
+export ZAIF_KEY=''
+export ZAIF_SECRET=''
+
+# bitFlyer Lightning
+export BITFLYER_KEY=''
+export BITFLYER_SECRET=''
+
+# btcbox
+export BTCBOX_KEY=''
+export BTCBOX_SECRET=''
