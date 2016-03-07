@@ -179,7 +179,7 @@ module Kaesen
     end
 
     def get_nonce
-      pre_nonce = @nonce
+      pre_nonce = @@nonce
       # 桁数揃えないとエラーになる
       next_nonce = (Time.now.to_i) * 100 % 10_000_000_000
 
