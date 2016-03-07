@@ -1,10 +1,13 @@
 module Kaesen
   class Client
+    attr_accessor :markets
     attr_reader :ticker
     attr_reader :balance
     attr_reader :depth
 
     def initialize
+      @markets = []   # [Array]
+                      #   [Market] instance of markets
       @ticker = {}    # [hash]
                       #   [market name]:
       @depth = {}     # [hash] Order book
@@ -24,29 +27,28 @@ module Kaesen
     # Update market information.
     # @param [Market]
     # @return [hash]
-    def update_ticker(market)
-      @ticker[market.name] = market.ticker
+    def update_ticker()
+      @markets.each{|m|
+        @ticker[m.name] = m.ticker
+      }
     end
 
     # Update market information.
     # @param [Market]
     # @return [hash]
-    def update_depth(market)
-      @ticker[market.name] = market.depth
+    def update_depth()
+      @markets.each{|m|
+        @depth[m.name] = m.depth
+      }
     end
 
     # Update asset information.
     # @param [Market]
     # @return [hash]
-    def balance(market)
-      @asset[market.name] = market.balance
-    end
-
-    # Get total assets in JPY.
-    # @param [Market]
-    # @return [float] property
-    def asset_in_jpy(market)
-      (@asset[market.name]["jpy"] + @asset[market.name]["btc"] * @ticker[market.name]["last"]).to_f
+    def update_balance()
+      @markets.each{|m|
+        @balance[m.name] = m.balance
+      }
     end
   end
 end
