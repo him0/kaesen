@@ -10,15 +10,15 @@ module Kaesen
       @depth = {}     # [hash] Order book
                       #   [market name]:
                       #     asks: [array]
-                      #       price: [N]
-                      #       amount: [N]
+                      #       price: [BigDecimal]
+                      #       amount: [BigDecimal]
                       #     bids: [array]
                       #     timestamp: [int]
                       #     timestampl: [int]
       @balance = {}   # [hash]
                       #   [market name]:
-                      #     jpy: [N] JPY, 円
-                      #     btc: [N] BTC, Bitcoin
+                      #     jpy: [BigDecimal] JPY, 円
+                      #     btc: [BigDecimal] BTC, Bitcoin
     end
 
     # Update market information.

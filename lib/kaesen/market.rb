@@ -20,12 +20,12 @@ module Kaesen
     # Get ticker information.
     # @abstract
     # @return [hash] ticker
-    #   ask: [N] 最良売気配値
-    #   bid: [N] 最良買気配値
-    #   last: [N] 最近値(?用語要チェック), last price
-    #   high: [N] 高値
-    #   low: [N] 安値
-    #   volume: [N] 取引量
+    #   ask: [BigDecimal] 最良売気配値
+    #   bid: [BigDecimal] 最良買気配値
+    #   last: [BigDecimal] 最近値(?用語要チェック), last price
+    #   high: [BigDecimal] 高値
+    #   low: [BigDecimal] 安値
+    #   volume: [BigDecimal] 取引量
     #   ltimestamp: [int] Local Timestamp
     def ticker
       raise NotImplemented.new()
@@ -35,11 +35,11 @@ module Kaesen
     # @abstract
     # @return [hash] array of market depth
     #   asks: [Array] 売りオーダー
-    #      price : [N]
-    #      size : [N]
+    #      price : [BigDecimal]
+    #      size : [BigDecimal]
     #   bids: [Array] 買いオーダー
-    #      price : [N]
-    #      size : [N]
+    #      price : [BigDecimal]
+    #      size : [BigDecimal]
     #   ltimestamp: [int] Local Timestamp
     def depth
       raise NotImplemented.new()
@@ -53,11 +53,11 @@ module Kaesen
     # @abstract
     # @return [hash] account_balance_hash
     #   jpy: [hash]
-    #      amount: [N] 総日本円
-    #      available: [N] 取引可能な日本円
+    #      amount: [BigDecimal] 総日本円
+    #      available: [BigDecimal] 取引可能な日本円
     #   btc [hash]
-    #      amount: [N] 総BTC
-    #      available: [N] 取引可能なBTC
+    #      amount: [BigDecimal] 総BTC
+    #      available: [BigDecimal] 取引可能なBTC
     #   ltimestamp: [int] Local Timestamp
     def balance
       raise NotImplemented.new()
@@ -66,32 +66,32 @@ module Kaesen
     # Buy the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # @abstract
-    # @param [N] rate
-    # @param [N] amount
+    # @param [BigDecimal] rate
+    # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [bool]
     #   id: [int] order id in the market
-    #   rate: [N]
-    #   amount: [N]
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] Local Timestamp
-    def buy(rate, amount=N.new("0.0"))
+    def buy(rate, amount=BigDecimal.new("0.0"))
       raise NotImplemented.new()
     end
 
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # @abstract
-    # @param [N] rate
-    # @param [N] amount
+    # @param [BigDecimal] rate
+    # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
     #   id: [int] order id in the market
-    #   rate: [N]
-    #   amount: [N]
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] Local Timestamp
-    def sell(rate, amount=N.new("0.0"))
+    def sell(rate, amount=BigDecimal.new("0.0"))
       raise NotImplemented.new()
     end
 

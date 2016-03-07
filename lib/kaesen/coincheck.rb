@@ -2,6 +2,7 @@ require_relative 'market.rb'
 require 'net/http'
 require 'openssl'
 require 'json'
+require 'bigdecimal'
 
 module Kaesen
   # Coincheck Wrapper Class
@@ -25,23 +26,23 @@ module Kaesen
 
     # Get ticker information.
     # @return [hash] ticker
-    #   ask: [N] 最良売気配値
-    #   bid: [N] 最良買気配値
-    #   last: [N] 最近値(?用語要チェック), last price
-    #   high: [N] 高値
-    #   low: [N] 安値
-    #   volume: [N] 取引量
+    #   ask: [BigDecimal] 最良売気配値
+    #   bid: [BigDecimal] 最良買気配値
+    #   last: [BigDecimal] 最近値(?用語要チェック), last price
+    #   high: [BigDecimal] 高値
+    #   low: [BigDecimal] 安値
+    #   volume: [BigDecimal] 取引量
     #   ltimestamp: [int] ローカルタイムスタンプ
     #   timestamp: [int] タイムスタンプ
     def ticker
       h = get_ssl(@url_public + "/api/ticker")
       {
-        "ask"        => N.new(h["ask"]),
-        "bid"        => N.new(h["bid"]),
-        "last"       => N.new(h["last"]),
-        "high"       => N.new(h["high"]),
-        "low"        => N.new(h["low"]),
-        "volume"     => N.new(h["volume"]), # h["volume"] は String
+        "ask"        => BigDecimal.new(h["ask"]),
+        "bid"        => BigDecimal.new(h["bid"]),
+        "last"       => BigDecimal.new(h["last"]),
+        "high"       => BigDecimal.new(h["high"]),
+        "low"        => BigDecimal.new(h["low"]),
+        "volume"     => BigDecimal.new(h["volume"]), # h["volume"] は String
         "ltimestamp" => Time.now.to_i,
         "timestamp"  => h["timestamp"],
       }
@@ -51,17 +52,17 @@ module Kaesen
     # @abstract
     # @return [hash] array of market depth
     #   asks: [Array] 売りオーダー
-    #      price : [N]
-    #      size : [N]
+    #      price : [BigDecimal]
+    #      size : [BigDecimal]
     #   bids: [Array] 買いオーダー
-    #      price : [N]
-    #      size : [N]
+    #      price : [BigDecimal]
+    #      size : [BigDecimal]
     #   ltimestamp: [int] ローカルタイムスタンプ
     def depth
       h = get_ssl(@url_public + "/api/order_books")
       {
-        "asks"       => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]},
-        "bids"       => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]},
+        "asks"       => h["asks"].map{|a,b| [BigDecimal.new(a), BigDecimal.new(b.to_s)]},
+        "bids"       => h["bids"].map{|a,b| [BigDecimal.new(a), BigDecimal.new(b.to_s)]},
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -74,11 +75,11 @@ module Kaesen
     # @abstract
     # @return [hash] account_balance_hash
     #   jpy: [hash]
-    #      amount: [N] 総日本円
-    #      available: [N] 取引可能な日本円
+    #      amount: [BigDecimal] 総日本円
+    #      available: [BigDecimal] 取引可能な日本円
     #   btc [hash]
-    #      amount: [N] 総BTC
-    #      available: [N] 取引可能なBTC
+    #      amount: [BigDecimal] 総BTC
+    #      available: [BigDecimal] 取引可能なBTC
     #   ltimestamp: [int] ローカルタイムスタンプ
     def balance
       have_key?
@@ -86,12 +87,12 @@ module Kaesen
       h = get_ssl_with_sign(address)
       {
         "jpy"        => {
-          "amount"    => N.new(h["jpy"]).add(h["jpy_reserved"].to_s),
-          "available" => N.new(h["jpy"]),
+          "amount"    => BigDecimal.new(h["jpy"]) + BigDecimal.new(h["jpy_reserved"].to_s),
+          "available" => BigDecimal.new(h["jpy"]),
         },
         "btc"        => {
-          "amount"    => N.new(h["btc"]).add(h["btc_reserved"].to_s),
-          "available" => N.new(h["btc"]),
+          "amount"    => BigDecimal.new(h["btc"]) + BigDecimal.new(h["btc_reserved"].to_s),
+          "available" => BigDecimal.new(h["btc"]),
         },
         "ltimestamp" => Time.now.to_i,
       }
@@ -100,17 +101,17 @@ module Kaesen
     # Buy the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # @abstract
-    # @param [N] rate
-    # @param [N] amount
+    # @param [BigDecimal] rate
+    # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
     #   id: [int] order id at the market
-    #   rate: [N]
-    #   amount: [N]
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] ローカルタイムスタンプ
     #   timestamp: [int] タイムスタンプ
-    def buy(rate, amount=N.new(0))
+    def buy(rate, amount=BigDecimal.new(0))
       have_key?
       address = @url_private + "/api/exchange/orders"
       body = {
@@ -123,8 +124,8 @@ module Kaesen
       {
         "success"    => h["success"].to_s,
         "id"         => h["id"],
-        "rate"       => N.new(h["rate"]),
-        "amount"     => N.new(h["size"].to_s),
+        "rate"       => BigDecimal.new(h["rate"]),
+        "amount"     => BigDecimal.new(h["size"].to_s),
         "order_type" => h["order_type"],
         "ltimestamp" => Time.now.to_i,
         "timestamp"  => DateTime.parse(h["created_at"]).to_time.to_i,
@@ -134,17 +135,17 @@ module Kaesen
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # @abstract
-    # @param [N] rate
-    # @param [N] amount
+    # @param [BigDecimal] rate
+    # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
     #   id: [int] order id at the market
-    #   rate: [N]
-    #   amount: [N]
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] ローカルタイムスタンプ
     #   timestamp: [int] タイムスタンプ
-    def sell(rate, amount=N.new(0))
+    def sell(rate, amount=BigDecimal.new(0))
       have_key?
       address = @url_private + "/api/exchange/orders"
       body = {
@@ -157,8 +158,8 @@ module Kaesen
       {
         "success"    => h["success"].to_s,
         "id"         => h["id"],
-        "rate"       => N.new(h["rate"]),
-        "amount"     => N.new(h["size"].to_s),
+        "rate"       => BigDecimal.new(h["rate"]),
+        "amount"     => BigDecimal.new(h["size"].to_s),
         "order_type" => h["order_type"],
         "ltimestamp" => Time.now.to_i,
         "timestamp"  => DateTime.parse(h["created_at"]).to_time.to_i,

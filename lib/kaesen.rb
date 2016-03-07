@@ -1,5 +1,4 @@
 require "kaesen/version"
-require "kaesen/N"
 require "kaesen/bitflyer"
 require "kaesen/btcbox"
 require "kaesen/coincheck"
