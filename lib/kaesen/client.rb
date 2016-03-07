@@ -1,6 +1,5 @@
 module Kaesen
   class Client
-    attr_accessor :markets
     attr_reader :ticker
     attr_reader :balance
     attr_reader :depth
@@ -8,47 +7,48 @@ module Kaesen
     def initialize
       @markets = []   # [Array]
                       #   [Market] instance of markets
-      @ticker = {}    # [hash]
-                      #   [market name]:
-      @depth = {}     # [hash] Order book
-                      #   [market name]:
-                      #     asks: [array]
-                      #       price: [BigDecimal]
-                      #       amount: [BigDecimal]
-                      #     bids: [array]
-                      #     timestamp: [int]
-                      #     timestampl: [int]
-      @balance = {}   # [hash]
-                      #   [market name]:
-                      #     jpy: [BigDecimal] JPY, 円
-                      #     btc: [BigDecimal] BTC, Bitcoin
+      @ticker = []    # [Array]
+                      #   [Hash]: hash of ticker
+      @depth = []     # [Array]
+                      #   [Hash]: hash of depth
+      @balance = []   # [Array]
+                      #   [Hash]: hash of balance
+    end
+
+    # register the instance of market
+    # @parm [Market]
+    def add(market)
+      @markets.add(market)
     end
 
     # Update market information.
-    # @param [Market]
-    # @return [hash]
+    # @return [hash] hash of ticker
     def update_ticker()
+      @ticker = []
       @markets.each{|m|
-        @ticker[m.name] = m.ticker
+        @ticker.add(m.ticker)
       }
+      @ticker
     end
 
     # Update market information.
-    # @param [Market]
-    # @return [hash]
+    # @return [hash] hash of depth
     def update_depth()
+      @depth = []
       @markets.each{|m|
-        @depth[m.name] = m.depth
+        @depth.add(m.depth)
       }
+      @depth
     end
 
     # Update asset information.
-    # @param [Market]
-    # @return [hash]
+    # @return [hash] hash of balance
     def update_balance()
+      @balance = []
       @markets.each{|m|
-        @balance[m.name] = m.balance
+        @balance.add(m.balance)
       }
+      @balance
     end
   end
 end
