@@ -88,12 +88,12 @@ module Kaesen
       h = post_ssl(address, body)
       {
         "jpy"        => {
-          "amount"    => BigDecimal.new(h["deposit"]["jpy"].to_s),
-          "available" => BigDecimal.new(h["funds"]["jpy"].to_s),
+          "amount"    => BigDecimal.new(h["return"]["deposit"]["jpy"].to_s),
+          "available" => BigDecimal.new(h["return"]["funds"]["jpy"].to_s),
         },
         "btc"        => {
-          "amount"    => BigDecimal.new(h["deposit"]["btc"].to_s),
-          "available" => BigDecimal.new(h["funds"]["btc"].to_s),
+          "amount"    => BigDecimal.new(h["return"]["deposit"]["btc"].to_s),
+          "available" => BigDecimal.new(h["return"]["funds"]["btc"].to_s),
         },
         "ltimestamp" => Time.now.to_i,
       }
