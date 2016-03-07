@@ -1,5 +1,6 @@
 module Kaesen
   class Client
+    attr_reader :markets
     attr_reader :ticker
     attr_reader :balance
     attr_reader :depth
@@ -17,8 +18,8 @@ module Kaesen
 
     # register the instance of market
     # @parm [Market]
-    def add(market)
-      @markets.add(market)
+    def push(market)
+      @markets.push(market)
     end
 
     # Update market information.
@@ -26,7 +27,7 @@ module Kaesen
     def update_ticker()
       @ticker = []
       @markets.each{|m|
-        @ticker.add(m.ticker)
+        @ticker.push(m.ticker)
       }
       @ticker
     end
@@ -36,7 +37,7 @@ module Kaesen
     def update_depth()
       @depth = []
       @markets.each{|m|
-        @depth.add(m.depth)
+        @depth.push(m.depth)
       }
       @depth
     end
