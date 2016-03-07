@@ -136,8 +136,8 @@ module Kaesen
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # Abstract Method.
-    # @param [int] rate
-    # @param [float] amount
+    # @param [BigDecimal] rate
+    # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
     #   id: [int] order id at the market

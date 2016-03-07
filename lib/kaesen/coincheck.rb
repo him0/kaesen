@@ -102,7 +102,7 @@ module Kaesen
     # 指数注文 買い.
     # @abstract
     # @param [BigDecimal] rate
-    # @param [BigDecimal] amount
+    # @param [BigDecimal] amount # # minimal trade amount is 0.005 BTC
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
     #   id: [int] order id at the market
@@ -136,7 +136,7 @@ module Kaesen
     # 指数注文 売り.
     # @abstract
     # @param [BigDecimal] rate
-    # @param [BigDecimal] amount
+    # @param [BigDecimal] amount # minimal trade amount is 0.005 BTC
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
     #   id: [int] order id at the market
