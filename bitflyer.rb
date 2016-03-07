@@ -21,7 +21,6 @@ module Bot
       @api_secret  = ENV["BITFLYER_SECRET"]
       @url_public  = "https://api.bitflyer.jp/v1"
       @url_private = @url_public
-      @nonce = 0
     end
 
     #############################################################
@@ -48,7 +47,7 @@ module Bot
         # "low" is not supply
         "volume"     => N.new(h["volume"].to_s), # to_s にしないと誤差が生じる
         "ltimestamp" => Time.now.to_i,
-        "timestamp"  => DateTime.parse(h["timestamp"]).strftime('%s').to_i,
+        "timestamp"  => DateTime.parse(h["timestamp"]).to_time.to_i,
       }
     end
 
@@ -65,8 +64,8 @@ module Bot
     def depth
       h = get_ssl(@url_public + "/getboard?product_code=BTC_JPY")
       {
-        "asks" => h["asks"].map{|x| [N.new(x["price"].to_s), N.new(x["size"].to_s)]},
-        "bids" => h["bids"].map{|x| [N.new(x["price"].to_s), N.new(x["size"].to_s)]},
+        "asks"       => h["asks"].map{|x| [N.new(x["price"].to_s), N.new(x["size"].to_s)]},
+        "bids"       => h["bids"].map{|x| [N.new(x["price"].to_s), N.new(x["size"].to_s)]},
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -87,30 +86,35 @@ module Bot
     #   ltimestamp: [int] ローカルタイムスタンプ
     def balance
       have_key?
-      address = @url_private + "/me/getbalance"
-      h = get_ssl_with_sign(address)
+      h = get_ssl_with_sign(@url_private + "/me/getbalance")
       {
-        "jpy" => {
-          "amount" => N.new(h[0]["amount"].to_s),
+        "jpy"        => {
+          "amount"    => N.new(h[0]["amount"].to_s),
           "available" => N.new(h[0]["available"].to_s),
         },
-        "btc" => {
-          "amount" => N.new(h[1]["amount"].to_s),
+        "btc"        => {
+          "amount"    => N.new(h[1]["amount"].to_s),
           "available" => N.new(h[1]["available"].to_s),
         },
         "ltimestamp" => Time.now.to_i,
       }
     end
 
-    # Bought the amount of Bitcoin at the rate.
+    # Buy the amount of Bitcoin at the rate.
     # 指数注文 買い.
-    # Abstract Method.
+    # @abstract
     # @param [N] rate
     # @param [N] amount
     # @return [hash] history_order_hash
+    #   success: [String] "true" or "false"
+    #   id: [int] order id at the market
+    #   rate: [N]
+    #   amount: [N]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def buy(rate, amount=N.new(0))
       have_key?
-      address = (@url_private + "/me/sendchildorder")
+      address = @url_private + "/me/sendchildorder"
       body = {
         "product_code"     => "BTC_JPY",
         "child_order_type" => "LIMIT",
@@ -119,8 +123,16 @@ module Bot
         "size"             => amount.to_f.round(4),
         "minute_to_expire" => 525600,
         "time_in_force"    => "GTC",
-      }.to_json
-      post_ssl_with_sign(address, body)
+      }
+      h = post_ssl_with_sign(address, body)
+      {
+        "success"    => "true",
+        "id"         => h["child_order_acceptance_id"],
+        "rate"       => N.new(rate),
+        "amount"     => N.new(amount.to_s),
+        "order_type" => "buy",
+        "ltimestamp" => Time.now.to_i,
+      }
     end
 
     # Sell the amount of Bitcoin at the rate.
@@ -129,9 +141,15 @@ module Bot
     # @param [int] rate
     # @param [float] amount
     # @return [hash] history_order_hash
+    #   success: [String] "true" or "false"
+    #   id: [int] order id at the market
+    #   rate: [N]
+    #   amount: [N]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def sell(rate, amount=N.new(0))
       have_key?
-      address = (@url_private + "/me/sendchildorder")
+      address = @url_private + "/me/sendchildorder"
       body = {
         "product_code"     => "BTC_JPY",
         "child_order_type" => "LIMIT",
@@ -140,8 +158,16 @@ module Bot
         "size"             => amount.to_f.round(4),
         "minute_to_expire" => 525600,
         "time_in_force"    => "GTC",
-      }.to_json
-      post_ssl_with_sign(address, body)
+      }
+      h = post_ssl_with_sign(address, body)
+      {
+        "success"    => "true",
+        "id"         => h["child_order_acceptance_id"],
+        "rate"       => N.new(rate),
+        "amount"     => N.new(amount.to_s),
+        "order_type" => "sell",
+        "ltimestamp" => Time.now.to_i,
+      }
     end
 
     private
@@ -190,9 +216,10 @@ module Bot
       return @@nonce
     end
 
-    def get_sign(uri, method, nonce, body="")
-      text = nonce.to_s + method + uri.request_uri + body
+    def get_sign(uri, method, nonce, body)
       secret = @api_secret
+      text = nonce.to_s + method + uri.request_uri
+      text += body.to_json if body != ""
 
       OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
     end
@@ -213,7 +240,7 @@ module Bot
 
       begin
         req = Net::HTTP::Get.new(uri, headers)
-        req.body = body
+        req.body = body.to_json if body != ""
 
         https = https = initialize_https(uri)
         https.start {|w|
@@ -222,7 +249,6 @@ module Bot
             when Net::HTTPSuccess
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
-              raise APIErrorException, json["error_message"] if json.is_a?(Hash) && json["status"] != nil
               return json
             else
               raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
@@ -240,7 +266,7 @@ module Bot
 
       begin
         req = Net::HTTP::Post.new(uri, headers)
-        req.body = body
+        req.body = body.to_json if body != ""
 
         https = initialize_https(uri)
         https.start {|w|
@@ -249,7 +275,6 @@ module Bot
             when Net::HTTPSuccess
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
-              raise APIErrorException, json["error_message"] if json.is_a?(Hash) && json["status"] != nil
               return json
             else
               raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value

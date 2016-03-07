@@ -18,7 +18,6 @@ module Bot
       @api_secret  = ENV["BTCBOX_SECRET"]
       @url_public  = "https://www.btcbox.co.jp/api/v1"
       @url_private = @url_public
-      @nonce = 0
     end
 
     #############################################################
@@ -37,12 +36,12 @@ module Bot
     def ticker
       h = get_ssl(@url_public + "/ticker")
       {
-        "ask"    => N.new(h["sell"]),
-        "bid"    => N.new(h["buy"]),
-        "last"   => N.new(h["last"]),
-        "high"   => N.new(h["high"]),
-        "low"    => N.new(h["low"]),
-        "volume" => N.new(h["vol"].to_s), # to_s がないと誤差が生じる
+        "ask"        => N.new(h["sell"]),
+        "bid"        => N.new(h["buy"]),
+        "last"       => N.new(h["last"]),
+        "high"       => N.new(h["high"]),
+        "low"        => N.new(h["low"]),
+        "volume"     => N.new(h["vol"].to_s), # to_s がないと誤差が生じる
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -60,8 +59,8 @@ module Bot
     def depth
       h = get_ssl(@url_public + "/depth")
       {
-        "asks" => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
-        "bids" => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "asks"       => h["asks"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "bids"       => h["bids"].map{|a,b| [N.new(a), N.new(b.to_s)]}, # to_s でないと誤差が生じる
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -82,15 +81,14 @@ module Bot
     #   ltimestamp: [int] ローカルタイムスタンプ
     def balance
       have_key?
-      address = @url_private + "/balance/"
-      h = post_ssl(address)
+      h = post_ssl(@url_private + "/balance/")
       {
-        "jpy" => {
-          "amount" => N.new(h["jpy_balance"].to_s).add(h["jpy_lock"].to_s),
+        "jpy"        => {
+          "amount"    => N.new(h["jpy_balance"].to_s).add(h["jpy_lock"].to_s),
           "available" => N.new(h["jpy_balance"].to_s),
         },
-        "btc" => {
-          "amount" => N.new(h["btc_balance"].to_s).add(h["btc_lock"].to_s),
+        "btc"        => {
+          "amount"    => N.new(h["btc_balance"].to_s).add(h["btc_lock"].to_s),
           "available" => N.new(h["btc_balance"].to_s),
         },
         "ltimestamp" => Time.now.to_i,
@@ -103,14 +101,29 @@ module Bot
     # @param [N] rate
     # @param [N] amount
     # @return [hash] history_order_hash
+    #   success: [String] "true" or "false"
+    #   id: [int] order id at the market
+    #   rate: [N]
+    #   amount: [N]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def buy(rate, amount=N.new(0))
       have_key?
       address = @url_private + "/trade_add/"
-      post_ssl(address, params = {
+      params = {
         "amount" => amount.to_f.round(4),
-        "price" => rate.to_i,
-        "type" => "buy",
-      })
+        "price"  => rate.to_i,
+        "type"   => "buy",
+      }
+      h = post_ssl(address, params)
+      {
+        "success"    => "true",
+        "id"         => nil, #[TODO]
+        "rate"       => N.new(rate),
+        "amount"     => N.new(amount.to_s),
+        "order_type" => "sell",
+        "ltimestamp" => Time.now.to_i,
+      }
     end
 
     # Sell the amount of Bitcoin at the rate.
@@ -119,14 +132,29 @@ module Bot
     # @param [int] rate
     # @param [float] amount
     # @return [hash] history_order_hash
+    #   success: [String] "true" or "false"
+    #   id: [int] order id at the market
+    #   rate: [N]
+    #   amount: [N]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] ローカルタイムスタンプ
     def sell(rate, amount=N.new(0))
       have_key?
       address = @url_private + "/trade_add/"
-      post_ssl(address, params = {
+      params = {
         "amount" => amount.to_f.round(4),
         "price" => rate.to_i,
         "type" => "sell",
-      })
+      }
+      h = post_ssl(address, params)
+      {
+        "success"    => "true",
+        "id"         => nil, #[TODO]
+        "rate"       => N.new(rate),
+        "amount"     => N.new(amount.to_s),
+        "order_type" => "sell",
+        "ltimestamp" => Time.now.to_i,
+      }
     end
 
     private
@@ -176,14 +204,18 @@ module Bot
       return @@nonce
     end
 
+    def get_sign(params)
+      secret = Digest::MD5.hexdigest(@api_secret)
+      text = URI.encode_www_form(params)
+
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
+    end
+
     def post_ssl(address, params={})
       uri = URI.parse(address)
       params["key"] = @api_key
       params["nonce"] = get_nonce
-      key = Digest::MD5.hexdigest(@api_secret)
-      data = URI.encode_www_form(params)
-      sign = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), key, data)
-      params["signature"] = sign
+      params["signature"] = get_sign(params)
 
       begin
         req = Net::HTTP::Post.new(uri)

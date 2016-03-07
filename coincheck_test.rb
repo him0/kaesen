@@ -39,6 +39,16 @@ class Coincheck_Test < Test::Unit::TestCase
     assert(d["asks"].is_a?(Array))
     assert(d["bids"].is_a?(Array))
     assert(d["ltimestamp"].is_a?(Integer))
+
+    assert(d["asks"][0].is_a?(Array))
+
+    assert(d["asks"][0][0].is_a?(Bot::N))
+    assert(d["asks"][0][1].is_a?(Bot::N))
+
+    assert(d["bids"][0].is_a?(Array))
+
+    assert(d["bids"][0][0].is_a?(Bot::N))
+    assert(d["bids"][0][1].is_a?(Bot::N))
   end
 
   def test_update

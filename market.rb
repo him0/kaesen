@@ -69,6 +69,24 @@ module Bot
         raise NotImplemented.new()
       end
 
+      # [todo] Get list of active orders.
+      # @abstruct
+      # @return [hash] orders_hash
+      #   buy_orders: [array]
+      #      order[array]
+      #         id: [int]
+      #         rate: [N]
+      #         amount: [N]
+      #   sell_orders: [array]
+      #      order[array]
+      #         id: [int]
+      #         rate: [N]
+      #         amount: [N]
+      #   ltimestamp: [int]
+      def active_orders
+        raise NotImplemented.new()
+      end
+
       # Buy the amount of Bitcoin at the rate.
       # 指数注文 買い.
       # @abstract
@@ -80,7 +98,7 @@ module Bot
       #   rate: [N]
       #   amount: [N]
       #   order_type: [String] "sell" or "buy"
-      #   timestamp: [int] タイムスタンプ(提供していない取引所もある)
+      #   ltimestamp: [int] ローカルタイムスタンプ
       def buy(rate, amount=N.new("0.0"))
         raise NotImplemented.new()
       end
@@ -91,14 +109,23 @@ module Bot
       # @param [N] rate
       # @param [N] amount
       # @return [hash] history_order_hash
-      #   success: [String] #[todo] [TrueClass] [FalseClass] にすべき？
+      #   success: [String] "true" or "false" #[todo] [TrueClass] [FalseClass] にすべき？
       #   id: [int] order id in the market
       #   rate: [N]
       #   amount: [N]
       #   order_type: [String] "sell" or "buy"
-      #   timestamp: [int] タイムスタンプ(提供していない取引所もある)
       #   ltimestamp: [int] ローカルタイムスタンプ
       def sell(rate, amount=N.new("0.0"))
+        raise NotImplemented.new()
+      end
+
+      # [todo] Cancel a active order.
+      # @abstruct
+      # @param [N] id of the order
+      # @return [hash] history_cancel_order_hash
+      #   success: [String] "true" or "false" #[todo] [TrueClass] [FalseClass] にすべき？
+      #   ltimestamp: [int] ローカルタイムスタンプ
+      def cancel(id)
         raise NotImplemented.new()
       end
 

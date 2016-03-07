@@ -8,6 +8,7 @@ class Btcbox_Test < Test::Unit::TestCase
   # Called before every test method runs. Can be used
   # to set up fixture information.
   def setup
+    sleep(1.1)
     @market = Bot::Btcbox.new
   end
 
@@ -37,6 +38,16 @@ class Btcbox_Test < Test::Unit::TestCase
     assert(d["asks"].is_a?(Array))
     assert(d["bids"].is_a?(Array))
     assert(d["ltimestamp"].is_a?(Integer))
+
+    assert(d["asks"][0].is_a?(Array))
+
+    assert(d["asks"][0][0].is_a?(Bot::N))
+    assert(d["asks"][0][1].is_a?(Bot::N))
+
+    assert(d["bids"][0].is_a?(Array))
+
+    assert(d["bids"][0][0].is_a?(Bot::N))
+    assert(d["bids"][0][1].is_a?(Bot::N))
   end
 
   def test_update
@@ -64,14 +75,32 @@ class Btcbox_Test < Test::Unit::TestCase
 
   def test_buy
     rate = Bot::N.new(30000)
-    amount = Bot::N.new("0.012")
-    # pp @market.buy(rate, amount)
+    amount = Bot::N.new("0.010")
+    b = @market.buy(rate, amount)
+
+    assert(b.is_a?(Hash))
+
+    assert(b["success"].is_a?(String))
+    assert(b["id"].is_a?(Integer))
+    assert(b["rate"].is_a?(Bot::N))
+    assert(b["amount"].is_a?(Bot::N))
+    assert(b["order_type"].is_a?(String))
+    assert(b["ltimestamp"].is_a?(Integer))
   end
 
   def test_sell
     rate = Bot::N.new(70000)
-    amount = Bot::N.new("0.012")
-    # pp @market.sell(rate, amount)
+    amount = Bot::N.new("0.010")
+    s = @market.sell(rate, amount)
+
+    assert(s.is_a?(Hash))
+
+    assert(s["success"].is_a?(String))
+    assert(s["id"].is_a?(Integer))
+    assert(s["rate"].is_a?(Bot::N))
+    assert(s["amount"].is_a?(Bot::N))
+    assert(s["order_type"].is_a?(String))
+    assert(s["ltimestamp"].is_a?(Integer))
   end
 
 end

@@ -17,7 +17,6 @@ module Bot
       @api_secret  = ENV["COINCHECK_SECRET"]
       @url_public  = "https://coincheck.jp"
       @url_private = @url_public
-      @nonce = 0
     end
 
     #############################################################
@@ -104,7 +103,7 @@ module Bot
     # @param [N] rate
     # @param [N] amount
     # @return [hash] history_order_hash
-    #   success: [String]
+    #   success: [String] "true" or "false"
     #   id: [int] order id at the market
     #   rate: [N]
     #   amount: [N]
@@ -138,7 +137,7 @@ module Bot
     # @param [N] rate
     # @param [N] amount
     # @return [hash] history_order_hash
-    #   success: [String]
+    #   success: [String] "true" or "false"
     #   id: [int] order id at the market
     #   rate: [N]
     #   amount: [N]
@@ -192,9 +191,11 @@ module Bot
       return @@nonce
     end
 
-    def get_sign(address, nonce, body="")
+    def get_sign(address, nonce, body)
+      secret = @api_secret
       text = nonce.to_s + address.to_s + body
-      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), @api_secret, text)
+
+      OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
     end
 
     # Connect to address via https, and return json response.
