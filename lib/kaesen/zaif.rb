@@ -237,9 +237,10 @@ module Kaesen
           response = w.request(req)
           case response
             when Net::HTTPSuccess
+              print(response.body)
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
-              return json["return"]
+              return json
             else
               raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
           end
