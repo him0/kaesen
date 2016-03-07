@@ -237,6 +237,7 @@ module Kaesen
           response = w.request(req)
           case response
             when Net::HTTPSuccess
+              print(response.body)
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
               return json
