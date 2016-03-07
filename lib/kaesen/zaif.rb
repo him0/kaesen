@@ -239,7 +239,7 @@ module Kaesen
             when Net::HTTPSuccess
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
-              return json["return"]
+              return json
             else
               raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
           end
