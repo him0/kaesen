@@ -37,11 +37,11 @@ module Kaesen
     def ticker
       h = get_ssl(@url_public + "/ticker/btc_jpy")
       {
-        "ask"        => BigDecimal.new(h["ask"]),
-        "bid"        => BigDecimal.new(h["bid"]),
-        "last"       => BigDecimal.new(h["last"]),
-        "high"       => BigDecimal.new(h["high"]),
-        "low"        => BigDecimal.new(h["low"]),
+        "ask"        => BigDecimal.new(h["ask"].to_s),
+        "bid"        => BigDecimal.new(h["bid"].to_s),
+        "last"       => BigDecimal.new(h["last"].to_s),
+        "high"       => BigDecimal.new(h["high"].to_s),
+        "low"        => BigDecimal.new(h["low"].to_s),
         "volume"     => BigDecimal.new(h["volume"].to_s),
         "ltimestamp" => Time.now.to_i,
         "vwap"       => BigDecimal.new(h["vwap"].to_s)
@@ -61,8 +61,8 @@ module Kaesen
     def depth
       h = get_ssl(@url_public + "/depth/btc_jpy")
       {
-        "asks"       => h["asks"].map{|a,b| [BigDecimal.new(a), BigDecimal.new(b.to_s)]}, # to_s でないと誤差が生じる
-        "bids"       => h["bids"].map{|a,b| [BigDecimal.new(a), BigDecimal.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "asks"       => h["asks"].map{|a,b| [BigDecimal.new(a.to_s), BigDecimal.new(b.to_s)]}, # to_s でないと誤差が生じる
+        "bids"       => h["bids"].map{|a,b| [BigDecimal.new(a.to_s), BigDecimal.new(b.to_s)]}, # to_s でないと誤差が生じる
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -126,7 +126,7 @@ module Kaesen
       {
         "success"    => result,
         "id"         => h["return"]["order_id"],
-        "rate"       => BigDecimal.new(rate),
+        "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
         "ltimestamp" => Time.now.to_i,
@@ -160,7 +160,7 @@ module Kaesen
       {
         "success"    => result,
         "id"         => h["return"]["order_id"],
-        "rate"       => BigDecimal.new(rate),
+        "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
         "ltimestamp" => Time.now.to_i,

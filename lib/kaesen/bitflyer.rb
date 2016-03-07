@@ -41,9 +41,9 @@ module Kaesen
     def ticker
       h = get_ssl(@url_public + "/getticker?product_code=BTC_JPY")
       {
-        "ask"        => BigDecimal.new(h["best_ask"]),
-        "bid"        => BigDecimal.new(h["best_bid"]),
-        "last"       => BigDecimal.new(h["ltp"]), # ltp は last price ?
+        "ask"        => BigDecimal.new(h["best_ask"].to_s),
+        "bid"        => BigDecimal.new(h["best_bid"].to_s),
+        "last"       => BigDecimal.new(h["ltp"].to_s), # ltp は last price ?
         # "high" is not supply
         # "low" is not supply
         "volume"     => BigDecimal.new(h["volume"].to_s), # to_s にしないと誤差が生じる
@@ -129,7 +129,7 @@ module Kaesen
       {
         "success"    => "true",
         "id"         => h["child_order_acceptance_id"],
-        "rate"       => BigDecimal.new(rate),
+        "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "buy",
         "ltimestamp" => Time.now.to_i,
@@ -164,7 +164,7 @@ module Kaesen
       {
         "success"    => "true",
         "id"         => h["child_order_acceptance_id"],
-        "rate"       => BigDecimal.new(rate),
+        "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
         "ltimestamp" => Time.now.to_i,

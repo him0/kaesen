@@ -37,12 +37,12 @@ module Kaesen
     def ticker
       h = get_ssl(@url_public + "/api/ticker")
       {
-        "ask"        => BigDecimal.new(h["ask"]),
-        "bid"        => BigDecimal.new(h["bid"]),
-        "last"       => BigDecimal.new(h["last"]),
-        "high"       => BigDecimal.new(h["high"]),
-        "low"        => BigDecimal.new(h["low"]),
-        "volume"     => BigDecimal.new(h["volume"]), # h["volume"] は String
+        "ask"        => BigDecimal.new(h["ask"].to_s),
+        "bid"        => BigDecimal.new(h["bid"].to_s),
+        "last"       => BigDecimal.new(h["last"].to_s),
+        "high"       => BigDecimal.new(h["high"].to_s),
+        "low"        => BigDecimal.new(h["low"].to_s),
+        "volume"     => BigDecimal.new(h["volume"].to_s), # h["volume"] は String
         "ltimestamp" => Time.now.to_i,
         "timestamp"  => h["timestamp"],
       }
@@ -61,8 +61,8 @@ module Kaesen
     def depth
       h = get_ssl(@url_public + "/api/order_books")
       {
-        "asks"       => h["asks"].map{|a,b| [BigDecimal.new(a), BigDecimal.new(b.to_s)]},
-        "bids"       => h["bids"].map{|a,b| [BigDecimal.new(a), BigDecimal.new(b.to_s)]},
+        "asks"       => h["asks"].map{|a,b| [BigDecimal.new(a.to_s), BigDecimal.new(b.to_s)]},
+        "bids"       => h["bids"].map{|a,b| [BigDecimal.new(a.to_s), BigDecimal.new(b.to_s)]},
         "ltimestamp" => Time.now.to_i,
       }
     end
@@ -87,12 +87,12 @@ module Kaesen
       h = get_ssl_with_sign(address)
       {
         "jpy"        => {
-          "amount"    => BigDecimal.new(h["jpy"]) + BigDecimal.new(h["jpy_reserved"].to_s),
-          "available" => BigDecimal.new(h["jpy"]),
+          "amount"    => BigDecimal.new(h["jpy"].to_s) + BigDecimal.new(h["jpy_reserved"].to_s),
+          "available" => BigDecimal.new(h["jpy"].to_s),
         },
         "btc"        => {
-          "amount"    => BigDecimal.new(h["btc"]) + BigDecimal.new(h["btc_reserved"].to_s),
-          "available" => BigDecimal.new(h["btc"]),
+          "amount"    => BigDecimal.new(h["btc"].to_s) + BigDecimal.new(h["btc_reserved"].to_s),
+          "available" => BigDecimal.new(h["btc"].to_s),
         },
         "ltimestamp" => Time.now.to_i,
       }
@@ -124,7 +124,7 @@ module Kaesen
       {
         "success"    => h["success"].to_s,
         "id"         => h["id"],
-        "rate"       => BigDecimal.new(h["rate"]),
+        "rate"       => BigDecimal.new(h["rate"].to_s),
         "amount"     => BigDecimal.new(h["size"].to_s),
         "order_type" => h["order_type"],
         "ltimestamp" => Time.now.to_i,
@@ -158,7 +158,7 @@ module Kaesen
       {
         "success"    => h["success"].to_s,
         "id"         => h["id"],
-        "rate"       => BigDecimal.new(h["rate"]),
+        "rate"       => BigDecimal.new(h["rate"].to_s),
         "amount"     => BigDecimal.new(h["size"].to_s),
         "order_type" => h["order_type"],
         "ltimestamp" => Time.now.to_i,
