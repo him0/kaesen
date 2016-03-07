@@ -115,7 +115,7 @@ module Kaesen
       have_key?
       address = @url_private
       body = {
-        "mathod"        => "trade",
+        "method"        => "trade",
         "currency_pair" => "btc_jpy",
         "action"        => "bid",
         "price"         => rate.to_i,
@@ -149,7 +149,7 @@ module Kaesen
       have_key?
       address = @url_private
       body = {
-        "mathod"        => "trade",
+        "method"        => "trade",
         "currency_pair" => "btc_jpy",
         "action" => "ask",
         "price" => rate.to_i,
