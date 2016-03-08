@@ -79,6 +79,21 @@ module Kaesen
       raise NotImplemented.new()
     end
 
+    # Buy the amount of Bitcoin from the market.
+    # 成行注文 買い.
+    # @abstract
+    # @param [BigDecimal] market_buy_amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_buy(market_buy_amount=BigDecimal.new("0.0"))
+      raise NotImplemented.new()
+    end
+
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # @abstract
@@ -92,6 +107,21 @@ module Kaesen
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] Local Timestamp
     def sell(rate, amount=BigDecimal.new("0.0"))
+      raise NotImplemented.new()
+    end
+
+    # Sell the amount of Bitcoin to the market.
+    # 成行注文 売り.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_sell(amount=BigDecimal.new("0.0"))
       raise NotImplemented.new()
     end
 
