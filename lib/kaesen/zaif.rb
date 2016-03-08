@@ -114,11 +114,12 @@ module Kaesen
     def buy(rate, amount=BigDecimal.new(0))
       have_key?
       address = @url_private
+      rate = (rate.to_i % 5) * 5 # should be 5 multiples
       body = {
         "method"        => "trade",
         "currency_pair" => "btc_jpy",
         "action"        => "bid",
-        "price"         => rate.to_i,
+        "price"         => rate,
         "amount"        => amount.to_f.round(4)
       }
       h = post_ssl(address, body)
@@ -148,11 +149,12 @@ module Kaesen
     def sell(rate, amount=BigDecimal.new(0))
       have_key?
       address = @url_private
+      rate = (rate.to_i % 5) * 5 # should be 5 multiples
       body = {
         "method"        => "trade",
         "currency_pair" => "btc_jpy",
         "action" => "ask",
-        "price" => rate.to_i,
+        "price" => rate,
         "amount" => amount.to_f.round(4),
       }
       h = post_ssl(address, body)
