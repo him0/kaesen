@@ -105,10 +105,10 @@ module Kaesen
     # 指数注文 買い.
     # @abstract
     # @param [BigDecimal] rate
-    # @param [BigDecimal] amount
+    # @param [BigDecimal] amount minimal amount is 0.001 BTC
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id at the market
+    #   id: [String] order id at the market
     #   rate: [BigDecimal]
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
@@ -128,7 +128,7 @@ module Kaesen
       h = post_ssl_with_sign(address, body)
       {
         "success"    => "true",
-        "id"         => h["child_order_acceptance_id"],
+        "id"         => h["child_order_acceptance_id"].to_s,
         "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "buy",
@@ -143,7 +143,7 @@ module Kaesen
     # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id at the market
+    #   id: [String] order id at the market
     #   rate: [BigDecimal]
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
@@ -163,7 +163,7 @@ module Kaesen
       h = post_ssl_with_sign(address, body)
       {
         "success"    => "true",
-        "id"         => h["child_order_acceptance_id"],
+        "id"         => h["child_order_acceptance_id"].to_s,
         "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",

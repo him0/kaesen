@@ -70,7 +70,7 @@ module Kaesen
     # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [bool]
-    #   id: [int] order id in the market
+    #   id: [String] order id in the market
     #   rate: [BigDecimal]
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
@@ -86,7 +86,7 @@ module Kaesen
     # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id in the market
+    #   id: [String] order id in the market
     #   rate: [BigDecimal]
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"

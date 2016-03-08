@@ -42,9 +42,9 @@ module Kaesen
         "last"       => BigDecimal.new(h["last"].to_s),
         "high"       => BigDecimal.new(h["high"].to_s),
         "low"        => BigDecimal.new(h["low"].to_s),
-        "volume"     => BigDecimal.new(h["volume"].to_s), # h["volume"] は String
+        "volume"     => BigDecimal.new(h["volume"].to_s),
         "ltimestamp" => Time.now.to_i,
-        "timestamp"  => h["timestamp"],
+        "timestamp"  => h["timestamp"].to_i,
       }
     end
 
@@ -105,7 +105,7 @@ module Kaesen
     # @param [BigDecimal] amount # # minimal trade amount is 0.005 BTC
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id at the market
+    #   id: [String] order id at the market
     #   rate: [BigDecimal]
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
@@ -123,7 +123,7 @@ module Kaesen
       h = post_ssl_with_sign(address,body)
       {
         "success"    => h["success"].to_s,
-        "id"         => h["id"],
+        "id"         => h["id"].to_s,
         "rate"       => BigDecimal.new(h["rate"].to_s),
         "amount"     => BigDecimal.new(h["size"].to_s),
         "order_type" => h["order_type"],
@@ -139,7 +139,7 @@ module Kaesen
     # @param [BigDecimal] amount # minimal trade amount is 0.005 BTC
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id at the market
+    #   id: [String] order id at the market
     #   rate: [BigDecimal]
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
@@ -157,7 +157,7 @@ module Kaesen
       h = post_ssl_with_sign(address,body)
       {
         "success"    => h["success"].to_s,
-        "id"         => h["id"],
+        "id"         => h["id"].to_s,
         "rate"       => BigDecimal.new(h["rate"].to_s),
         "amount"     => BigDecimal.new(h["size"].to_s),
         "order_type" => h["order_type"],

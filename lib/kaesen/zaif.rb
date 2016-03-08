@@ -106,15 +106,15 @@ module Kaesen
     # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id at the market
-    #   rate: [BigDecimal]
-    #   amount: [BigDecimal]
+    #   id: [String] order id at the market
+    #   rate: [BigDecimal] rate should be 5 multiples
+    #   amount: [BigDecimal] minimal amount is 0.0001 BTC
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] ローカルタイムスタンプ
     def buy(rate, amount=BigDecimal.new(0))
       have_key?
       address = @url_private
-      rate = (rate.to_i / 5) * 5 # should be 5 multiples
+      rate = (rate.to_i / 5) * 5
       body = {
         "method"        => "trade",
         "currency_pair" => "btc_jpy",
@@ -126,7 +126,7 @@ module Kaesen
       result = h["success"].to_i == 1 ? "true" : "false"
       {
         "success"    => result,
-        "id"         => h["return"]["order_id"],
+        "id"         => h["return"]["order_id"].to_s,
         "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
@@ -141,15 +141,15 @@ module Kaesen
     # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [String] "true" or "false"
-    #   id: [int] order id at the market
-    #   rate: [BigDecimal]
-    #   amount: [BigDecimal]
+    #   id: [String] order id at the market
+    #   rate: [BigDecimal] rate should be 5 multiples
+    #   amount: [BigDecimal] minimal amount is 0.0001 BTC
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] ローカルタイムスタンプ
     def sell(rate, amount=BigDecimal.new(0))
       have_key?
       address = @url_private
-      rate = (rate.to_i / 5) * 5 # should be 5 multiples
+      rate = (rate.to_i / 5) * 5
       body = {
         "method"        => "trade",
         "currency_pair" => "btc_jpy",
@@ -161,7 +161,7 @@ module Kaesen
       result = h["success"].to_i == 1 ? "true" : "false"
       {
         "success"    => result,
-        "id"         => h["return"]["order_id"],
+        "id"         => h["return"]["order_id"].to_s,
         "rate"       => BigDecimal.new(rate.to_s),
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
