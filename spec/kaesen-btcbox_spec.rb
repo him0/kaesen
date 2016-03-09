@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Kaesen::Btcbox do
   before do
-    @market = m = Kaesen::Btcbox.new()
+    @market = Kaesen::Btcbox.new()
   end
 
   describe "#ticker" do
