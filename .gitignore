@@ -1,3 +1,5 @@
+### https://raw.github.com/github/gitignore/def395f811edd4b895690250abadb15ec3a6fd75/ruby.gitignore
+
 *.gem
 *.rbc
 /.config
@@ -5,6 +7,7 @@
 /InstalledFiles
 /pkg/
 /spec/reports/
+/spec/examples.txt
 /test/tmp/
 /test/version_tmp/
 /tmp/
@@ -20,7 +23,7 @@ build/
 /doc/
 /rdoc/
 
-## Environment normalisation:
+## Environment normalization:
 /.bundle/
 /vendor/bundle
 /lib/bundler/man/
@@ -34,7 +37,5 @@ build/
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
 
-*.sh
-*.log
-my_kraken.rb
-trade_rules.rb
+# dotenv gem file that set the enviroment values
+.env

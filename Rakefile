@@ -1,19 +1,6 @@
-require 'yard'
-require 'yard/rake/yardoc_task'
- 
-YARD::Rake::YardocTask.new do |t|
-  t.files = %w(
-      market.rb
-      bitflyer.rb
-      btcbox.rb
-      coincheck.rb
-      zaif.rb
-    )
-  t.options = []
-  t.options = %w(--debug --verbose) if $trace
-end
+require "bundler/gem_tasks"
+require "rspec/core/rake_task"
 
-require 'rake/clean'
-require 'pp'
+RSpec::Core::RakeTask.new(:spec)
 
-CLEAN.include("doc")
+task :default => :spec
