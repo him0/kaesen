@@ -48,13 +48,23 @@ describe Kaesen::Bitflyer do
   #   end
   # end
 
-  describe "#market_buy" do
-    context "normal" do
-      it 'should buy some bitcoin' do
-        test_oreder_result(@market.market_buy(0.001))
-      end
-    end
-  end
+  # describe "#market_buy" do
+  #   context "normal" do
+  #     it 'should buy some bitcoin' do
+  #       result = @market.market_buy(0.001)
+  #       print result
+  #
+  #       expect(result.class).to eq Hash
+  #
+  #       expect(result["success"].class).to eq String
+  #       expect(result["id"].class).to eq String
+  #       expect(result["rate"]).to eq nil
+  #       expect(result["amount"].class).to eq BigDecimal
+  #       expect(result["order_type"].class).to eq String
+  #       expect(result["ltimestamp"].class).to eq Fixnum
+  #     end
+  #   end
+  # end
 
   # describe "#sell" do
   #   context "normal" do
@@ -64,11 +74,21 @@ describe Kaesen::Bitflyer do
   #   end
   # end
 
-  describe "#market_sell" do
-    context "normal" do
-      it 'should sell some bitcoin' do
-        test_oreder_result(@market.market_sell(0.001))
-      end
-    end
-  end
+  # describe "#market_sell" do
+  #   context "normal" do
+  #     it 'should sell some bitcoin' do
+  #       result = @market.market_sell(0.001)
+  #       print result
+  #
+  #       expect(result.class).to eq Hash
+  #
+  #       expect(result["success"].class).to eq String
+  #       expect(result["id"].class).to eq String
+  #       expect(result["rate"]).to eq nil
+  #       expect(result["amount"].class).to eq BigDecimal
+  #       expect(result["order_type"].class).to eq String
+  #       expect(result["ltimestamp"].class).to eq Fixnum
+  #     end
+  #   end
+  # end
 end
