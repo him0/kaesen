@@ -36,6 +36,7 @@ module Kaesen
     #   timestamp: [int] タイムスタンプ
     def ticker
       h = get_ssl(@url_public + "/api/ticker")
+      @ticker =
       {
         "ask"        => BigDecimal.new(h["ask"].to_s),
         "bid"        => BigDecimal.new(h["bid"].to_s),
@@ -132,6 +133,37 @@ module Kaesen
       }
     end
 
+    # Buy the amount of Bitcoin from the market.
+    # 成行注文 買い.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   market_buy_amount: [BigDecimal] amount of JPY
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_buy(market_buy_amount=BigDecimal.new("0.0"))
+      have_key?
+      address = @url_private + "/api/exchange/orders"
+      body = {
+        "market_buy_amount" => market_buy_amount.to_f.round(4),
+        "order_type" => "market_buy",
+        "pair"       => "btc_jpy",
+      }
+      h = post_ssl_with_sign(address,body)
+      {
+        "success"    => h["success"].to_s,
+        "id"         => h["id"].to_s,
+        "rate"       => BigDecimal.new(h["rate"].to_s),
+        "amount"     => BigDecimal.new(h["size"].to_s),
+        "order_type" => h["order_type"],
+        "ltimestamp" => Time.now.to_i,
+        "timestamp"  => DateTime.parse(h["created_at"]).to_time.to_i,
+      }
+    end
+
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # @abstract
@@ -152,6 +184,37 @@ module Kaesen
         "rate"       => rate.to_i,
         "amount"     => amount.to_f.round(4),
         "order_type" => "sell",
+        "pair"       => "btc_jpy",
+      }
+      h = post_ssl_with_sign(address,body)
+      {
+        "success"    => h["success"].to_s,
+        "id"         => h["id"].to_s,
+        "rate"       => BigDecimal.new(h["rate"].to_s),
+        "amount"     => BigDecimal.new(h["size"].to_s),
+        "order_type" => h["order_type"],
+        "ltimestamp" => Time.now.to_i,
+        "timestamp"  => DateTime.parse(h["created_at"]).to_time.to_i,
+      }
+    end
+
+    # Sell the amount of Bitcoin to the market.
+    # 成行注文 売り.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_sell(amount=BigDecimal.new("0.0"))
+      have_key?
+      address = @url_private + "/api/exchange/orders"
+      body = {
+        "amount"     => amount.to_f.round(4),
+        "order_type" => "market_sell",
         "pair"       => "btc_jpy",
       }
       h = post_ssl_with_sign(address,body)
