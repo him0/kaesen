@@ -50,7 +50,7 @@ describe Kaesen::Btcbox do
   describe "#market_buy" do
     context "normal" do
       it 'should buy some bitcoin' do
-        test_oreder_result(@market.market_buy(30000 * 0.01))
+        test_oreder_result(@market.market_buy(0.01))
       end
     end
   end

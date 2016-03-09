@@ -82,7 +82,7 @@ module Kaesen
     # Buy the amount of Bitcoin from the market.
     # 成行注文 買い.
     # @abstract
-    # @param [BigDecimal] market_buy_amount
+    # @param [BigDecimal] amount
     # @return [hash] history_order_hash
     #   success: [bool]
     #   id: [String] order id in the market
@@ -90,7 +90,7 @@ module Kaesen
     #   amount: [BigDecimal]
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] Local Timestamp
-    def market_buy(market_buy_amount=BigDecimal.new("0.0"))
+    def market_buy(amount=BigDecimal.new("0.0"))
       raise NotImplemented.new()
     end
 

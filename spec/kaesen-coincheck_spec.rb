@@ -51,7 +51,7 @@ describe Kaesen::Coincheck do
   describe "#market_buy" do
     context "normal" do
       it 'should buy some bitcoin' do
-        test_oreder_result(@market.market_buy(30000 * 0.005))
+        test_oreder_result(@market.market_buy(0.005))
       end
     end
   end
