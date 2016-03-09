@@ -205,7 +205,7 @@ module Kaesen
 
     def get_nonce
       pre_nonce = @@nonce
-      next_nonce = (Time.now.to_i) * 100 % 1_000_000_000
+      next_nonce = Time.now.to_i
 
       if next_nonce <= pre_nonce
         @@nonce = pre_nonce + 1
