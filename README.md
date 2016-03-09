@@ -33,6 +33,8 @@ b.ticker
 
 + LakeBTC
 + Kraken
++ Monetago
++ Quoine
 
 ## Development
 
