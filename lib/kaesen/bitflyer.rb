@@ -43,10 +43,10 @@ module Kaesen
       {
         "ask"        => BigDecimal.new(h["best_ask"].to_s),
         "bid"        => BigDecimal.new(h["best_bid"].to_s),
-        "last"       => BigDecimal.new(h["ltp"].to_s), # ltp は last price ?
-        # "high" is not supply
-        # "low" is not supply
-        "volume"     => BigDecimal.new(h["volume"].to_s), # to_s にしないと誤差が生じる
+        "last"       => BigDecimal.new(h["ltp"].to_s),
+        # "high" is not supplied.
+        # "low" is not supplied.
+        "volume"     => BigDecimal.new(h["volume"].to_s),
         "ltimestamp" => Time.now.to_i,
         "timestamp"  => DateTime.parse(h["timestamp"]).to_time.to_i,
       }
@@ -136,6 +136,39 @@ module Kaesen
       }
     end
 
+    # Buy the amount of Bitcoin from the market.
+    # 成行注文 買い.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_buy(amount=BigDecimal.new("0.0"))
+      have_key?
+      address = @url_private + "/me/sendchildorder"
+      body = {
+        "product_code"     => "BTC_JPY",
+        "child_order_type" => "MARKET",
+        "side"             => "BUY",
+        "size"             => amount.to_f.round(4),
+        "minute_to_expire" => 525600,
+        "time_in_force"    => "GTC",
+      }
+      h = post_ssl_with_sign(address, body)
+      {
+        "success"    => "true",
+        "id"         => h["child_order_acceptance_id"].to_s,
+        # "rate" is not supplied.
+        "amount"     => BigDecimal.new(amount.to_s),
+        "order_type" => "buy",
+        "ltimestamp" => Time.now.to_i,
+      }
+    end
+
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # Abstract Method.
@@ -165,6 +198,39 @@ module Kaesen
         "success"    => "true",
         "id"         => h["child_order_acceptance_id"].to_s,
         "rate"       => BigDecimal.new(rate.to_s),
+        "amount"     => BigDecimal.new(amount.to_s),
+        "order_type" => "sell",
+        "ltimestamp" => Time.now.to_i,
+      }
+    end
+
+    # Sell the amount of Bitcoin to the market.
+    # 成行注文 売り.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_sell(amount=BigDecimal.new("0.0"))
+      have_key?
+      address = @url_private + "/me/sendchildorder"
+      body = {
+        "product_code"     => "BTC_JPY",
+        "child_order_type" => "MARKET",
+        "side"             => "SELL",
+        "size"             => amount.to_f.round(4),
+        "minute_to_expire" => 525600,
+        "time_in_force"    => "GTC",
+      }
+      h = post_ssl_with_sign(address, body)
+      {
+        "success"    => "true",
+        "id"         => h["child_order_acceptance_id"].to_s,
+        # "rate" is not supplied.
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
         "ltimestamp" => Time.now.to_i,
