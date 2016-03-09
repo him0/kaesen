@@ -134,6 +134,40 @@ module Kaesen
       }
     end
 
+    # Buy the amount of Bitcoin from the market.
+    # 成行注文 買い.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_buy(amount=BigDecimal.new("0.0"))
+      have_key?
+      address = @url_private
+      rate = (rate.to_i / 5) * 5
+      body = {
+        "method"        => "trade",
+        "currency_pair" => "btc_jpy",
+        "action"        => "bid",
+        "price"         => 100000,
+        "amount"        => amount.to_f.round(4)
+      }
+      h = post_ssl(address, body)
+      result = h["success"].to_i == 1 ? "true" : "false"
+      {
+        "success"    => result,
+        "id"         => h["return"]["order_id"].to_s,
+        "rate"       => BigDecimal.new(rate.to_s),
+        "amount"     => BigDecimal.new(amount.to_s),
+        "order_type" => "sell",
+        "ltimestamp" => Time.now.to_i,
+      }
+    end
+
     # Sell the amount of Bitcoin at the rate.
     # 指数注文 売り.
     # Abstract Method.
@@ -155,6 +189,40 @@ module Kaesen
         "currency_pair" => "btc_jpy",
         "action" => "ask",
         "price" => rate,
+        "amount" => amount.to_f.round(4),
+      }
+      h = post_ssl(address, body)
+      result = h["success"].to_i == 1 ? "true" : "false"
+      {
+        "success"    => result,
+        "id"         => h["return"]["order_id"].to_s,
+        "rate"       => BigDecimal.new(rate.to_s),
+        "amount"     => BigDecimal.new(amount.to_s),
+        "order_type" => "sell",
+        "ltimestamp" => Time.now.to_i,
+      }
+    end
+
+    # Sell the amount of Bitcoin to the market.
+    # 成行注文 売り.
+    # @abstract
+    # @param [BigDecimal] amount
+    # @return [hash] history_order_hash
+    #   success: [bool]
+    #   id: [String] order id in the market
+    #   rate: [BigDecimal]
+    #   amount: [BigDecimal]
+    #   order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def market_sell(amount=BigDecimal.new("0.0"))
+      have_key?
+      address = @url_private
+      rate = (rate.to_i / 5) * 5
+      body = {
+        "method"        => "trade",
+        "currency_pair" => "btc_jpy",
+        "action" => "ask",
+        "price" => 5,
         "amount" => amount.to_f.round(4),
       }
       h = post_ssl(address, body)
