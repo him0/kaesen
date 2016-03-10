@@ -39,3 +39,6 @@ build/
 
 # dotenv gem file that set the enviroment values
 .env
+
+.rbenv-gemsets
+
