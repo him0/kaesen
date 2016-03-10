@@ -5,6 +5,7 @@ require "kaesen/coincheck"
 require "kaesen/zaif"
 require "kaesen/monetago"
 require "kaesen/kraken"
+require "kaesen/quoine"
 require "kaesen/client"
 
 # A module of the united wrapper for exchanging Japanese yen and Bitcoin and
