@@ -1,5 +1,6 @@
 require "kaesen/version"
 require "kaesen/bitflyer"
+require "kaesen/bitflyerfx"
 require "kaesen/btcbox"
 require "kaesen/coincheck"
 require "kaesen/zaif"

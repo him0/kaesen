@@ -22,6 +22,7 @@ module Kaesen
       @api_secret  = ENV["BITFLYER_SECRET"]
       @url_public  = "https://api.bitflyer.jp/v1"
       @url_private = @url_public
+      @product_code = "BTC_JPY"
     end
 
     #############################################################
@@ -39,7 +40,7 @@ module Kaesen
     #   ltimestamp: [int] ローカルタイムスタンプ
     #   timestamp: [int] タイムスタンプ
     def ticker
-      h = get_ssl(@url_public + "/getticker?product_code=BTC_JPY")
+      h = get_ssl(@url_public + "/getticker?product_code=#{@product_code}")
       {
         "ask"        => BigDecimal.new(h["best_ask"].to_s),
         "bid"        => BigDecimal.new(h["best_bid"].to_s),
@@ -63,7 +64,7 @@ module Kaesen
     #      size : [BigDecimal]
     #   ltimestamp: [int] ローカルタイムスタンプ
     def depth
-      h = get_ssl(@url_public + "/getboard?product_code=BTC_JPY")
+      h = get_ssl(@url_public + "/getboard?product_code=#{@product_code}")
       {
         "asks"       => h["asks"].map{|x| [BigDecimal.new(x["price"].to_s), BigDecimal.new(x["size"].to_s)]},
         "bids"       => h["bids"].map{|x| [BigDecimal.new(x["price"].to_s), BigDecimal.new(x["size"].to_s)]},
@@ -117,7 +118,7 @@ module Kaesen
       have_key?
       address = @url_private + "/me/sendchildorder"
       body = {
-        "product_code"     => "BTC_JPY",
+        "product_code"     => @product_code,
         "child_order_type" => "LIMIT",
         "side"             => "BUY",
         "price"            => rate.to_i,
@@ -151,7 +152,7 @@ module Kaesen
       have_key?
       address = @url_private + "/me/sendchildorder"
       body = {
-        "product_code"     => "BTC_JPY",
+        "product_code"     => @product_code,
         "child_order_type" => "MARKET",
         "side"             => "BUY",
         "size"             => amount.to_f.round(4),
@@ -185,7 +186,7 @@ module Kaesen
       have_key?
       address = @url_private + "/me/sendchildorder"
       body = {
-        "product_code"     => "BTC_JPY",
+        "product_code"     => @product_code,
         "child_order_type" => "LIMIT",
         "side"             => "SELL",
         "price"            => rate.to_i,
@@ -219,7 +220,7 @@ module Kaesen
       have_key?
       address = @url_private + "/me/sendchildorder"
       body = {
-        "product_code"     => "BTC_JPY",
+        "product_code"     => @product_code,
         "child_order_type" => "MARKET",
         "side"             => "SELL",
         "size"             => amount.to_f.round(4),
