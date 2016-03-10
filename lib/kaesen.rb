@@ -5,6 +5,7 @@ require "kaesen/coincheck"
 require "kaesen/zaif"
 require "kaesen/monetago"
 require "kaesen/kraken"
+require "kaesen/quoine"
 require "kaesen/lakebtc"
 require "kaesen/client"
 
