@@ -99,6 +99,31 @@ module Kaesen
       }
     end
 
+    # Get open orders.
+    # @abstract
+    # @return [Array] open_orders_array
+    #   @return [hash] history_order_hash
+    #     success: [bool]
+    #     id: [String] order id in the market
+    #     rate: [BigDecimal]
+    #     amount: [BigDecimal]
+    #     order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def opens
+      have_key?
+      address = @url_private + "/api/exchange/orders/opens"
+      h = get_ssl_with_sign(address)
+      h["orders"].map{|x|
+        {
+          "success"    => "true",
+          "id"         => x["id"].to_s,
+          "rate"       => BigDecimal.new(x["rate"].to_s),
+          "amount"     => BigDecimal.new(x["pending_amount"].to_s),
+          "order_type" => x["order_type"],
+        }
+      }
+    end
+
     # Buy the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # @abstract
