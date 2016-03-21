@@ -105,6 +105,8 @@ module Kaesen
     #     amount: [BigDecimal]
     #     order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] Local Timestamp
+    # [TODO](him0): アクティブなオーダに限定したいがオーダー出せないのでだれか頼む (2016/03/21)
+    # [TODO](him0): "/trade_view/" というAPIもあるけどこれも試せていないのでお願いします (2016/03/21)
     def opens
       have_key?
       a = get_ssl_with_sign(@url_private + "/orders/")
