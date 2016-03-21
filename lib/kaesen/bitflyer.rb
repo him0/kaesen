@@ -116,9 +116,12 @@ module Kaesen
     def opens
       have_key?
       address = @url_private + "/me/getchildorders"
-      body = {
-        "product_code"      => @product_code,
+      query = {
         "child_order_state" => "ACTIVE",
+      }
+      address += "?" + query.to_a.map{|x|"#{x[0]}=#{x[1]}" }.join("&")
+      body = {
+        "product_code" => @product_code,
       }
       a = get_ssl_with_sign(address, body)
       a.map{|x|
