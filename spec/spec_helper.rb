@@ -55,7 +55,7 @@ end
 def test_opens(opens)
   print opens
 
-  expect(opens.class).to eq Hash
+  expect(opens.class).to eq Array
 
   expect(opens[0].class).to eq Hash
 
