@@ -22,14 +22,14 @@ b =  Kaesen::Bitflyer.new()
 b.ticker
 ```
 
-### Order Supported markets
+### Markets supporting to order
 
 + Bitflyer
 + Btcbox
 + Coincheck
 + Zaif
 
-### Ticker Not Supported
+### Markets supporting to get ticker
 
 + Bitflyer
 + BitflyerFX
