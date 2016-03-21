@@ -64,11 +64,11 @@ describe Kaesen::Zaif do
   #   end
   # end
 
-  describe "#market_sell" do
-    context "normal" do
-      it 'should sell some bitcoin' do
-        test_oreder_result(@market.market_sell(0.0001))
-      end
-    end
-  end
+  # describe "#market_sell" do
+  #   context "normal" do
+  #     it 'should sell some bitcoin' do
+  #       test_oreder_result(@market.market_sell(0.0001))
+  #     end
+  #   end
+  # end
 end
