@@ -95,6 +95,30 @@ module Kaesen
       }
     end
 
+    # Get open orders.
+    # @abstract
+    # @return [Array] open_orders_array
+    #   @return [hash] history_order_hash
+    #     success: [bool]
+    #     id: [String] order id in the market
+    #     rate: [BigDecimal]
+    #     amount: [BigDecimal]
+    #     order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def opens
+      have_key?
+      a = get_ssl_with_sign(@url_private + "/orders/")
+      a.map{|x|
+        {
+          "success"    => "true",
+          "id"         => x["tid"],
+          "rate"       => BigDecimal.new(x["price"].to_s),
+          "amount"     => BigDecimal.new(x["amount"].to_s),
+          "order_type" => x["type"],
+        }
+      }
+    end
+
     # Bought the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # Abstract Method.
@@ -212,6 +236,32 @@ module Kaesen
     end
 
     def post_ssl(address, params={})
+    def get_ssl_with_sign(address, params={})
+      uri = URI.parse(address)
+      params["key"] = @api_key
+      params["nonce"] = get_nonce
+      params["signature"] = get_sign(params)
+
+      begin
+        req = Net::HTTP::Get.new(uri)
+        req.set_form(params)
+
+        https = initialize_https(uri)
+        https.start {|w|
+          response = w.request(req)
+          case response
+            when Net::HTTPSuccess
+              json = JSON.parse(response.body)
+              return json
+            else
+              raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
+          end
+        }
+      rescue
+        raise
+      end
+    end
+
       uri = URI.parse(address)
       params["key"] = @api_key
       params["nonce"] = get_nonce
