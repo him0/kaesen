@@ -39,6 +39,14 @@ describe Kaesen::Btcbox do
     end
   end
 
+  describe "#opens" do
+    context "normal" do
+      it 'get open orders' do
+        test_opens(@market.opens)
+      end
+    end
+  end
+
   # describe "#buy" do
   #   context "normal" do
   #     it 'should buy some bitcoin' do

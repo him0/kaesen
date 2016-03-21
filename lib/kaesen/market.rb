@@ -63,6 +63,20 @@ module Kaesen
       raise NotImplemented.new()
     end
 
+    # Get open orders.
+    # @abstract
+    # @return [Array] open_orders_array
+    #   @return [hash] history_order_hash
+    #     success: [bool]
+    #     id: [String] order id in the market
+    #     rate: [BigDecimal]
+    #     amount: [BigDecimal]
+    #     order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def opens
+      raise NotImplemented.new()
+    end
+
     # Buy the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # @abstract

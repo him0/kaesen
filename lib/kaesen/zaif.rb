@@ -99,6 +99,35 @@ module Kaesen
       }
     end
 
+    # Get open orders.
+    # @abstract
+    # @return [Array] open_orders_array
+    #   @return [hash] history_order_hash
+    #     success: [bool]
+    #     id: [String] order id in the market
+    #     rate: [BigDecimal]
+    #     amount: [BigDecimal]
+    #     order_type: [String] "sell" or "buy"
+    #     order_status: [String] "active", "completed" or "canceled"
+    #   ltimestamp: [int] Local Timestamp
+    def opens
+      have_key?
+      address = @url_private
+      body = { "method" => "active_orders" }
+      h = post_ssl(address, body)
+      h["return"].map{|key, value|
+        order_type = "buy" # when value["action"] is "bid"
+        order_type = "sell" if value["action"] == "ask"
+        {
+          "success"    => "true",
+          "id"         => key,
+          "rate"       => BigDecimal.new(value["price"].to_s),
+          "amount"     => BigDecimal.new(value["amount"].to_s),
+          "order_type" => order_type,
+        }
+      }
+    end
+
     # Bought the amount of Bitcoin at the rate.
     # 指数注文 買い.
     # Abstract Method.

@@ -81,7 +81,7 @@ module Kaesen
     #   ltimestamp: [int] ローカルタイムスタンプ
     def balance
       have_key?
-      h = post_ssl(@url_private + "/balance/")
+      h = post_ssl_with_sign(@url_private + "/balance/")
       {
         "jpy"        => {
           "amount"    => BigDecimal.new(h["jpy_balance"].to_s) + BigDecimal.new(h["jpy_lock"].to_s),
@@ -92,6 +92,34 @@ module Kaesen
           "available" => BigDecimal.new(h["btc_balance"].to_s),
         },
         "ltimestamp" => Time.now.to_i,
+      }
+    end
+
+    # Get open orders.
+    # @abstract
+    # @return [Array] open_orders_array
+    #   @return [hash] history_order_hash
+    #     success: [bool]
+    #     id: [String] order id in the market
+    #     rate: [BigDecimal]
+    #     amount: [BigDecimal]
+    #     order_type: [String] "sell" or "buy"
+    #   ltimestamp: [int] Local Timestamp
+    def opens
+      have_key?
+      address = @url_private + "/trade_list/"
+      params = {
+        "type"   => "open",
+      }
+      h = post_ssl_with_sign(address, params)
+      h.map{|x|
+        {
+          "success"    => "true",
+          "id"         => x["id"],
+          "rate"       => BigDecimal.new(x["price"].to_s),
+          "amount"     => BigDecimal.new(x["amount_outstanding"].to_s),
+          "order_type" => x["type"],
+        }
       }
     end
 
@@ -115,7 +143,7 @@ module Kaesen
         "price"  => rate.to_i,
         "type"   => "buy",
       }
-      h = post_ssl(address, params)
+      h = post_ssl_with_sign(address, params)
       {
         "success"    => h["result"].to_s,
         "id"         => h["id"].to_s,
@@ -146,7 +174,7 @@ module Kaesen
         "price" => rate.to_i,
         "type" => "sell",
       }
-      h = post_ssl(address, params)
+      h = post_ssl_with_sign(address, params)
       {
         "success"    => h["result"].to_s,
         "id"         => h["id"].to_s,
@@ -211,7 +239,33 @@ module Kaesen
       OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, text)
     end
 
-    def post_ssl(address, params={})
+    def get_ssl_with_sign(address, params={})
+      uri = URI.parse(address)
+      params["key"] = @api_key
+      params["nonce"] = get_nonce
+      params["signature"] = get_sign(params)
+
+      begin
+        req = Net::HTTP::Get.new(uri)
+        req.set_form(params)
+
+        https = initialize_https(uri)
+        https.start {|w|
+          response = w.request(req)
+          case response
+            when Net::HTTPSuccess
+              json = JSON.parse(response.body)
+              return json
+            else
+              raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
+          end
+        }
+      rescue
+        raise
+      end
+    end
+
+    def post_ssl_with_sign(address, params={})
       uri = URI.parse(address)
       params["key"] = @api_key
       params["nonce"] = get_nonce

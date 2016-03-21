@@ -52,6 +52,20 @@ def test_balance(balance)
   expect(balance["btc"]["available"].class).to eq BigDecimal
 end
 
+def test_opens(opens)
+  print opens
+
+  expect(opens.class).to eq Array
+
+  # expect(opens[0].class).to eq Hash
+  #
+  # expect(opens[0]["success"])
+  # expect(opens[0]["id"])
+  # expect(opens[0]["rate"])
+  # expect(opens[0]["amount"])
+  # expect(opens[0]["order_type"])
+end
+
 def test_oreder_result(result)
   print result
 

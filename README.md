@@ -22,17 +22,24 @@ b =  Kaesen::Bitflyer.new()
 b.ticker
 ```
 
-### Supported markets
+### Markets supporting to order
 
 + Bitflyer
 + Btcbox
 + Coincheck
 + Zaif
 
-### Markets Not Supported
+### Markets supporting to get ticker
 
-+ LakeBTC
++ Bitflyer
++ BitflyerFX
++ Btcbox
++ Coincheck
 + Kraken
++ LakeBTC
++ MonetaGo
++ Quoine
++ Zaif
 
 ## Development
 
