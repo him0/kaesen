@@ -15,3 +15,20 @@ require "kaesen/client"
 # customers with API access.
 module Kaesen
 end
+
+# Pretty printer for data including BigDecimal
+# @param [any] data that may include BigDecimal
+# @return [any] data that does not include BigDecimal
+def unBigDecimal(x)
+  if x.is_a?(Array)
+    x.map{|y| unBigDecimal(y)}
+  elsif x.is_a?(Hash)
+    x.map{|k,v|
+      [k, unBigDecimal(v)]
+    }.to_h
+  elsif x.is_a?(BigDecimal)
+    x.to_f
+  else
+    x
+  end
+end

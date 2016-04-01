@@ -4,7 +4,7 @@ describe Kaesen::Monetago do
   it 'should get ticker' do
     m = Kaesen::Monetago.new()
     ticker = m.ticker
-    print ticker
+    print unBigDecimal(ticker)
 
     expect(ticker.class).to eq Hash
     expect(ticker["ask"].class).to eq BigDecimal

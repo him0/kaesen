@@ -4,7 +4,7 @@ describe Kaesen::Quoine do
   it 'should get ticker' do
     m = Kaesen::Quoine.new()
     ticker = m.ticker
-    print ticker
+    print unBigDecimal(ticker)
 
     expect(ticker.class).to eq Hash
     expect(ticker["ask"].class).to eq BigDecimal
