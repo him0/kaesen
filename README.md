@@ -1,16 +1,16 @@
-# Kaesen
+# Kaesen (beta version)
 
 A module of the united wrapper for exchanging Japanese yen and Bitcoin and collecting market information of any exchange markets that provide ordinary customers with API access.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+For each of your applications, add the following line to the application's Gemfile:
 
 ```ruby
 gem 'kaesen', github: "him0/kaesen"
 ```
 
-And then execute:
+Then, run bundler:
 
     $ bundle install
 
@@ -22,28 +22,24 @@ b =  Kaesen::Bitflyer.new()
 b.ticker
 ```
 
-### Markets supporting to order
+### Currently supported exchange markets to trade:
 
-+ Bitflyer
-+ Btcbox
-+ Coincheck
++ bitFlyer
++ BtcBox
++ coincheck
 + Zaif
 
-### Markets supporting to get ticker
+### Currently supported exchange markets to get market information:
 
-+ Bitflyer
-+ BitflyerFX
-+ Btcbox
-+ Coincheck
++ bitFlyer Lightning
++ bitFlyer FX
++ BtcBox
++ coincheck
 + Kraken
 + LakeBTC
 + MonetaGo
 + Quoine
 + Zaif
-
-## Development
-
-This gem is beta version.
 
 ## Contributing
 
