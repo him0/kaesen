@@ -1,3 +1,4 @@
+# coding: utf-8
 module Kaesen
 
   # Exchange markets.
@@ -136,6 +137,23 @@ module Kaesen
     #   order_type: [String] "sell" or "buy"
     #   ltimestamp: [int] Local Timestamp
     def market_sell(amount=BigDecimal.new("0.0"))
+      raise NotImplemented.new()
+    end
+
+    # Cancel an open order
+    # @abstract
+    # @param [int or string] order id
+    # @return [hash]
+    #   success: [bool] status
+    def cancel(id)
+      raise NotImplemented.new()
+    end
+
+    # Cancel all open orders
+    # @abstract
+    # @return [array]
+    #   success: [bool] status
+    def cancel_all
       raise NotImplemented.new()
     end
 
