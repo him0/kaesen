@@ -4,7 +4,7 @@ describe Kaesen::Kraken do
   it 'should get ticker' do
     m = Kaesen::Kraken.new()
     ticker = m.ticker
-    print unBigDecimal(ticker)
+    print Kaesen::Market.unBigDecimal(ticker)
 
     expect(ticker.class).to eq Hash
     expect(ticker["ask"].class).to eq BigDecimal
@@ -20,7 +20,7 @@ describe Kaesen::Kraken do
   it 'should get depth' do
     m = Kaesen::Kraken.new()
     depth = m.depth
-    print depth
+    print Kaesen::Market.unBigDecimal(depth)
 
     expect(depth.class).to eq Hash
     expect(depth["asks"].class).to eq Array
