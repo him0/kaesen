@@ -11,7 +11,7 @@ RSpec.configure do |config|
 end
 
 def test_depth(depth)
-  print depth
+  print unBigDecimal(depth)
 
   expect(depth.class).to eq Hash
   expect(depth["asks"].class).to eq Array
@@ -37,7 +37,7 @@ def test_depth(depth)
 end
 
 def test_balance(balance)
-  print balance
+  print unBigDecimal(balance)
 
   expect(balance.class).to eq Hash
 
@@ -53,7 +53,7 @@ def test_balance(balance)
 end
 
 def test_opens(opens)
-  print opens
+  print unBigDecimal(opens)
 
   expect(opens.class).to eq Array
 
@@ -67,7 +67,7 @@ def test_opens(opens)
 end
 
 def test_oreder_result(result)
-  print result
+  print unBigDecimal(result)
 
   expect(result.class).to eq Hash
 

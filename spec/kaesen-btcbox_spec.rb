@@ -9,7 +9,7 @@ describe Kaesen::Btcbox do
     context "normal" do
       it 'should get ticker' do
         ticker = @market.ticker
-        print ticker
+        print Kaesen::Market.unBigDecimal(ticker)
 
         expect(ticker.class).to eq Hash
         expect(ticker["ask"].class).to eq BigDecimal

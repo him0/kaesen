@@ -4,7 +4,7 @@ describe Kaesen::Lakebtc do
   it 'should get ticker' do
     m = Kaesen::Lakebtc.new()
     ticker = m.ticker
-    print ticker
+    print Kaesen::Market.unBigDecimal(ticker)
 
     expect(ticker.class).to eq Hash
     expect(ticker["ask"].class).to eq BigDecimal
