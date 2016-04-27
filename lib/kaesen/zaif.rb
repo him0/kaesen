@@ -1,3 +1,4 @@
+# coding: utf-8
 require_relative 'market.rb'
 require 'net/http'
 require 'openssl'
@@ -263,6 +264,35 @@ module Kaesen
         "amount"     => BigDecimal.new(amount.to_s),
         "order_type" => "sell",
         "ltimestamp" => Time.now.to_i,
+      }
+    end
+
+    # Cancel an open order
+    # @abstract
+    # @param [int or string] order id
+    # @return [hash]
+    #   success: [bool] status
+    def cancel(id)
+      have_key?
+      address = @url_private
+      body = {
+        "method"        => "cancel_order",
+        "currency_pair" => "btc_jpy",
+        "order_id" => id,
+      }
+      h = post_ssl(address, body)
+      {
+        "success" => h["success"]==1,
+      }
+    end
+
+    # Cancel all open orders
+    # @abstract
+    # @return [array]
+    #   success: [bool] status
+    def cancel_all
+      opens.each{|h|
+        print cancel(h["id"])
       }
     end
 

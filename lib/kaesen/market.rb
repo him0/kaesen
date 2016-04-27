@@ -139,6 +139,23 @@ module Kaesen
       raise NotImplemented.new()
     end
 
+    # Cancel an open order
+    # @abstract
+    # @param [int or string] order id
+    # @return [hash]
+    #   success: [bool] status
+    def cancel(id)
+      raise NotImplemented.new()
+    end
+
+    # Cancel all open orders
+    # @abstract
+    # @return [array]
+    #   success: [bool] status
+    def cancel_all
+      raise NotImplemented.new()
+    end
+
     # Pretty printer for data including BigDecimal
     # @param [any] data that may include BigDecimal
     # @return [any] data that does not include BigDecimal
