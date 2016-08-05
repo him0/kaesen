@@ -8,7 +8,7 @@ require 'bigdecimal'
 module Kaesen
   # Zaif Wrapper Class
   # https://corp.zaif.jp/api-docs/
-  
+
   class Zaif < Market
     @@nonce = 0
 
@@ -332,7 +332,7 @@ module Kaesen
 
     def get_nonce
       pre_nonce = @@nonce
-      next_nonce = Time.now.to_i
+      next_nonce = Time.now.to_f
 
       if next_nonce <= pre_nonce
         @@nonce = pre_nonce + 1
