@@ -7,11 +7,11 @@ require 'bigdecimal'
 
 module Kaesen
   # BitFlyer FX Wrapper Class
-  # https://coincheck.jp/documents/exchange/api?locale=ja
+  # https://lightning.bitflyer.jp/docs?lang=ja
   ## API制限
   ## . Private API は 1 分間に約 200 回を上限とします。
   ## . IP アドレスごとに 1 分間に約 500 回を上限とします。
-  
+
   class Bitflyerfx < Bitflyer
     def initialize
       super()
