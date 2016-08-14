@@ -15,13 +15,18 @@ module Kaesen
   class Monetago < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "Monetago"
       @api_key     = ENV["MONETAGO_KEY"]
       @api_secret  = ENV["MONETAGO_SECRET"]
       @url_public  = "https://api.monetago.com:8400/ajax/v1"
       @url_private = @url_public
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

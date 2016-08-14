@@ -15,7 +15,7 @@ module Kaesen
   class Bitflyer < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "BitFlyer"
       @api_key     = ENV["BITFLYER_KEY"]
@@ -23,6 +23,11 @@ module Kaesen
       @url_public  = "https://api.bitflyer.jp/v1"
       @url_private = @url_public
       @product_code = "BTC_JPY"
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

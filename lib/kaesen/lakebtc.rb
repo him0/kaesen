@@ -11,13 +11,18 @@ module Kaesen
   class Lakebtc < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "Lakebtc"
       @api_key     = ENV["LAKEBTC_KEY"]
       @api_secret  = ENV["LAKEBTC_SECRET"]
       @url_public  = "https://www.LakeBTC.com/api_v1"
       @url_private = @url_public
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

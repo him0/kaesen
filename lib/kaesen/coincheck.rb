@@ -11,13 +11,18 @@ module Kaesen
   class Coincheck < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "Coincheck"
       @api_key     = ENV["COINCHECK_KEY"]
       @api_secret  = ENV["COINCHECK_SECRET"]
       @url_public  = "https://coincheck.jp"
       @url_private = @url_public
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

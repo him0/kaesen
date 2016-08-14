@@ -11,13 +11,18 @@ module Kaesen
   class Kraken < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "Kraken"
       @api_key     = ENV["KRAKEN_KEY"]
       @api_secret  = ENV["KRAKEN_SECRET"]
       @url_public  = "https://api.kraken.com/0/public"
       @url_private = "https://api.kraken.com/0/private"
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

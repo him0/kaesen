@@ -13,13 +13,18 @@ module Kaesen
   class Quoine < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "Quoine"
       @api_key     = ENV["QUOINE_KEY"]
       @api_secret  = ENV["QUOINE_SECRET"]
       @url_public  = "https://api.quoine.com"
       @url_private = @url_public
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

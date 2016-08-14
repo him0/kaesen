@@ -13,10 +13,15 @@ module Kaesen
   ## . IP アドレスごとに 1 分間に約 500 回を上限とします。
   
   class Bitflyerfx < Bitflyer
-    def initialize
+    def initialize(options = {})
       super()
       @name        = "BitFlyerFX"
       @product_code = "FX_BTC_JPY"
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     def balance
