@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kaesen (0.1.0)
+    kaesen (0.1.1)
 
 GEM
   remote: https://rubygems.org/
@@ -33,5 +33,8 @@ DEPENDENCIES
   rake (~> 10.0)
   rspec (~> 3.0)
 
+RUBY VERSION
+   ruby 2.2.5p319
+
 BUNDLED WITH
-   1.11.2
+   1.12.5
