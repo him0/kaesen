@@ -12,13 +12,18 @@ module Kaesen
   class Zaif < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "Zaif"
       @api_key     = ENV["ZAIF_KEY"]
       @api_secret  = ENV["ZAIF_SECRET"]
       @url_public  = "https://api.zaif.jp/api/1"
       @url_private = "https://api.zaif.jp/tapi"
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

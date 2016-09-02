@@ -4,6 +4,7 @@ module Kaesen
   # @abstract
   class Market
     attr_reader :name
+    attr_accessor :name, :api_key, :api_secret, :url_public, :url_private
     
     def initialize
       @name = nil         # [String] name of exchange market

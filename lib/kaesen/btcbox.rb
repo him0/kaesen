@@ -11,13 +11,18 @@ module Kaesen
   class Btcbox < Market
     @@nonce = 0
 
-    def initialize()
+    def initialize(options = {})
       super()
       @name        = "BtcBox"
       @api_key     = ENV["BTCBOX_KEY"]
       @api_secret  = ENV["BTCBOX_SECRET"]
       @url_public  = "https://www.btcbox.co.jp/api/v1"
       @url_private = @url_public
+
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+      yield(self) if block_given?
     end
 
     #############################################################

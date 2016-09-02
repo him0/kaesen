@@ -18,7 +18,10 @@ Then, run bundler:
 
 ```
 require 'kaesen'
-b =  Kaesen::Bitflyer.new()
+b =  Kaesen::Bitflyer.new do |config|
+  config.api_key = "XXX"
+  config.api_secret = "YYY"
+end
 b.ticker
 ```
 
