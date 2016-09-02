@@ -6,7 +6,7 @@ require 'bigdecimal'
 
 module Kaesen
   # Coincheck Wrapper Class
-  # https://coincheck.jp/documents/exchange/api?locale=ja
+  # https://coincheck.com/documents/exchange/api?locale=ja
 
   class Coincheck < Market
     @@nonce = 0
@@ -16,7 +16,7 @@ module Kaesen
       @name        = "Coincheck"
       @api_key     = ENV["COINCHECK_KEY"]
       @api_secret  = ENV["COINCHECK_SECRET"]
-      @url_public  = "https://coincheck.jp"
+      @url_public  = "https://coincheck.com"
       @url_private = @url_public
 
       options.each do |key, value|
