@@ -296,8 +296,9 @@ module Kaesen
     # @return [array]
     #   success: [bool] status
     def cancel_all
-      opens.each{|h|
-        print cancel(h["id"])
+      have_key?
+      opens.collect{|h|
+        cancel(h["id"])
       }
     end
 

@@ -132,7 +132,7 @@ module Kaesen
       a.map{|x|
         {
           "success"    => "true",
-          "id"         => x["id"],
+          "id"         => x["child_order_acceptance_id"],
           "rate"       => BigDecimal.new(x["average_price"].to_s),
           "amount"     => BigDecimal.new(x["size"].to_s),
           "order_type" => x["side"].downcase,
@@ -276,6 +276,35 @@ module Kaesen
       }
     end
 
+    # Cancel an open order
+    # @abstract
+    # @param [int or string] order id
+    # @return [hash]
+    #   success: [bool] status
+    def cancel(id)
+      have_key?
+      address = @url_private + "/me/cancelchildorder"
+      body = {
+        "product_code"              => @product_code,
+        "child_order_acceptance_id" => id
+      }
+      h = post_ssl_with_sign(address, body)
+      {
+        "success" => h
+      }
+    end
+
+    # Cancel all open orders
+    # @abstract
+    # @return [array]
+    #   success: [bool] status
+    def cancel_all
+      have_key?
+      opens.collect{|h|
+        cancel(h["id"])
+      }
+    end
+
     private
 
     def initialize_https(uri)
@@ -379,6 +408,7 @@ module Kaesen
           response = w.request(req)
           case response
             when Net::HTTPSuccess
+              return true if response.body == "" # cancel success
               json = JSON.parse(response.body)
               raise JSONException, response.body if json == nil
               return json
