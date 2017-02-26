@@ -259,6 +259,32 @@ module Kaesen
       }
     end
 
+    # Cancel an open order
+    # @abstract
+    # @param [int or string] order id
+    # @return [hash]
+    #   success: [bool] status
+    def cancel(id)
+      have_key?
+      address = @url_privat + "/api/exchange/orders/" + id
+      body = { }
+      h = delete_ssl_with_sign(address, body)
+      {
+        "success" => h["success"],
+      }
+    end
+
+    # Cancel all open orders
+    # @abstract
+    # @return [array]
+    #   success: [bool] status
+    def cancel_all
+      have_key?
+      opens.collect{|h|
+        cancel(h["id"])
+      }
+    end
+
     private
 
     def initialize_https(uri)
@@ -355,6 +381,31 @@ module Kaesen
 
       begin
         req = Net::HTTP::Post.new(uri, headers)
+        req.body = body.to_json
+
+        https = initialize_https(uri)
+        https.start {|w|
+          response = w.request(req)
+          case response
+            when Net::HTTPSuccess
+              json = JSON.parse(response.body)
+              return json
+            else
+              raise ConnectionFailedException, "Failed to connect to #{@name}: " + response.value
+          end
+        }
+      rescue
+        raise
+      end
+    end
+
+    def delete_ssl_with_sign(address, body="")
+      uri = URI.parse(address)
+      nonce = get_nonce
+      headers = get_headers(address, nonce, body)
+
+      begin
+        req = Net::HTTP::Delete.new(uri, headers)
         req.body = body.to_json
 
         https = initialize_https(uri)
