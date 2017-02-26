@@ -6,7 +6,7 @@ require 'date'
 require 'bigdecimal'
 
 module Kaesen
-  # BitFlyer Wrapper Class
+  # bitFlyer Wrapper Class
   # https://lightning.bitflyer.jp/docs?lang=ja
   ## API制限
   ## . Private API は 1 分間に約 200 回を上限とします。
@@ -17,7 +17,7 @@ module Kaesen
 
     def initialize(options = {})
       super()
-      @name        = "BitFlyer"
+      @name        = "bitFlyer"
       @api_key     = ENV["BITFLYER_KEY"]
       @api_secret  = ENV["BITFLYER_SECRET"]
       @url_public  = "https://api.bitflyer.jp/v1"

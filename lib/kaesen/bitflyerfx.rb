@@ -6,7 +6,7 @@ require 'date'
 require 'bigdecimal'
 
 module Kaesen
-  # BitFlyer FX Wrapper Class
+  # bitFlyer FX Wrapper Class
   # https://lightning.bitflyer.jp/docs?lang=ja
   ## API制限
   ## . Private API は 1 分間に約 200 回を上限とします。
@@ -15,7 +15,7 @@ module Kaesen
   class Bitflyerfx < Bitflyer
     def initialize(options = {})
       super()
-      @name        = "BitFlyerFX"
+      @name        = "bitFlyerFX"
       @product_code = "FX_BTC_JPY"
 
       options.each do |key, value|
