@@ -190,6 +190,34 @@ module Kaesen
       }
     end
 
+    # Cancel an open order
+    # @abstract
+    # @param [int or string] order id
+    # @return [hash]
+    #   success: [bool] status
+    def cancel(id)
+      have_key?
+      address = @url_private + "/trade_cancel/"
+      params = {
+        "id" => id,
+      }
+      h = post_ssl_with_sign(address, params)
+      {
+        "success" => h["result"],
+      }
+    end
+
+    # Cancel all open orders
+    # @abstract
+    # @return [array]
+    #   success: [bool] status
+    def cancel_all
+      have_key?
+      opens.collect{|h|
+        cancel(h["id"])
+      }
+    end
+
     private
 
     def initialize_https(uri)
