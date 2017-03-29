@@ -13,8 +13,8 @@ describe Kaesen::Bitbank do
     expect(ticker["high"].class).to eq BigDecimal
     expect(ticker["low"].class).to eq BigDecimal
     expect(ticker["volume"].class).to eq BigDecimal
+    expect(ticker["timestamp"].class).to eq Fixnum
     expect(ticker["ltimestamp"].class).to eq Fixnum
-    expect(ticker["vwap"].class).to eq BigDecimal
   end
 
   it 'should get depth' do
