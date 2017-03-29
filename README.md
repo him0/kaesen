@@ -52,6 +52,7 @@ b =  Kaesen::Bitflyer.new
 
 ### Currently supported exchange markets to get market information:
 
++ bitbank
 + bitFlyer Lightning
 + bitFlyer FX
 + BtcBox
