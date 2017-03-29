@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    kaesen (0.2.0)
+    kaesen (0.2.1)
 
 GEM
   remote: https://rubygems.org/
