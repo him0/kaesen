@@ -11,7 +11,7 @@ RSpec.configure do |config|
 end
 
 def test_depth(depth)
-  print unBigDecimal(depth)
+  print Kaesen::Market.unBigDecimal(depth)
 
   expect(depth.class).to eq Hash
   expect(depth["asks"].class).to eq Array
@@ -37,7 +37,7 @@ def test_depth(depth)
 end
 
 def test_balance(balance)
-  print unBigDecimal(balance)
+  print Kaesen::Market.unBigDecimal(balance)
 
   expect(balance.class).to eq Hash
 
@@ -53,7 +53,7 @@ def test_balance(balance)
 end
 
 def test_opens(opens)
-  print unBigDecimal(opens)
+  print Kaesen::Market.unBigDecimal(opens)
 
   expect(opens.class).to eq Array
 
@@ -67,7 +67,7 @@ def test_opens(opens)
 end
 
 def test_oreder_result(result)
-  print unBigDecimal(result)
+  print Kaesen::Market.unBigDecimal(result)
 
   expect(result.class).to eq Hash
 
