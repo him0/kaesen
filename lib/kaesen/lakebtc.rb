@@ -16,7 +16,7 @@ module Kaesen
       @name        = "Lakebtc"
       @api_key     = ENV["LAKEBTC_KEY"]
       @api_secret  = ENV["LAKEBTC_SECRET"]
-      @url_public  = "https://www.LakeBTC.com/api_v1"
+      @url_public  = "https://api.lakebtc.com/api_v2"
       @url_private = @url_public
 
       options.each do |key, value|
@@ -41,7 +41,7 @@ module Kaesen
     #   vwap: [BigDecimal] 過去24時間の加重平均
     def ticker
       h = get_ssl(@url_public + "/ticker") # the id of BTCJPY is 5.
-      h = h["JPY"]
+      h = h["btcjpy"]
       {
         "ask"        => BigDecimal.new(h["ask"].to_s),
         "bid"        => BigDecimal.new(h["bid"].to_s),
