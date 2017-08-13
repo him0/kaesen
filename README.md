@@ -59,7 +59,7 @@ b =  Kaesen::Bitflyer.new
 + coincheck
 + Kraken
 + LakeBTC
-+ MonetaGo
++ ~~MonetaGo~~ (deprecated)
 + Quoine
 + Zaif
 
